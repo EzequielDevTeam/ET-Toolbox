@@ -4,12 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import technology.ezequieldevteam.ettoolbox.databinding.ActivityMainBinding
-import technology.ezequieldevteam.ettoolbox.ui.BoostFragment
-import technology.ezequieldevteam.ettoolbox.ui.CleanFragment
-import technology.ezequieldevteam.ettoolbox.ui.CpuFragment
-import technology.ezequieldevteam.ettoolbox.ui.DeviceFragment
-import technology.ezequieldevteam.ettoolbox.ui.SpoofFragment
-import technology.ezequieldevteam.ettoolbox.ui.TrollFragment
+import technology.ezequieldevteam.ettoolbox.ui.boost.BoostFragment
+import technology.ezequieldevteam.ettoolbox.ui.clean.CleanFragment
+import technology.ezequieldevteam.ettoolbox.ui.device.DeviceFragment
+import technology.ezequieldevteam.ettoolbox.ui.modules.ModulesFragment
+import technology.ezequieldevteam.ettoolbox.ui.troll.TrollFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +26,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_boost -> BoostFragment()
                 R.id.nav_troll -> TrollFragment()
                 R.id.nav_clean -> CleanFragment()
-                R.id.nav_device -> DeviceFragment()
-                R.id.nav_cpu -> CpuFragment()
-                else -> SpoofFragment()
+                R.id.nav_modules -> ModulesFragment()
+                else -> DeviceFragment()
             }
             show(fragment)
             true

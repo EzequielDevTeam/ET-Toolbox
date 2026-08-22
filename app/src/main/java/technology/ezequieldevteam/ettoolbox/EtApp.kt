@@ -1,9 +1,11 @@
 package technology.ezequieldevteam.ettoolbox
 
 import android.app.Application
+import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 
 class EtApp : Application() {
+
     companion object {
         init {
             Shell.enableVerboseLogging = false
@@ -13,12 +15,24 @@ class EtApp : Application() {
                     .setTimeout(10)
             )
         }
+
         var rootAvailable = false
             private set
     }
 
     override fun onCreate() {
         super.onCreate()
-        rootAvailable = Shell.getShell().isRoot
+        DynamicColors.applyToActivitiesIfAvailable(this)
+        Thread {
+            rootAvailable = SuSafe.hasRoot()
+        }.start()
+    }
+}
+
+private object SuSafe {
+    fun hasRoot(): Boolean = try {
+        technology.ezequieldevteam.ettoolbox.root.Su.hasRoot()
+    } catch (t: Throwable) {
+        false
     }
 }
