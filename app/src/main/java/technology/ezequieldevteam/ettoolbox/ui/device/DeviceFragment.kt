@@ -32,7 +32,7 @@ class DeviceFragment : Fragment() {
     }
 
     private fun fillDeviceInfo(view: View) {
-        val mi = android.os.ActivityManager.MemoryInfo()
+        val mi = android.app.ActivityManager.MemoryInfo()
         requireContext().getSystemService(android.app.ActivityManager::class.java).getMemoryInfo(mi)
 
         view.findViewById<TextView>(R.id.device_info).text = buildString {
