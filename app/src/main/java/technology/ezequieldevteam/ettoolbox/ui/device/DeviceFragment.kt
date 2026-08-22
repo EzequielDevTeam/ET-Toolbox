@@ -1,5 +1,6 @@
 package technology.ezequieldevteam.ettoolbox.ui.device
 
+import android.app.ActivityManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,19 +32,24 @@ class DeviceFragment : Fragment() {
         setupSpoof(view)
     }
 
+    override fun onResume() {
+        super.onResume()
+        view?.let { setupCpu(it) }
+    }
+
     private fun fillDeviceInfo(view: View) {
-        val mi = android.app.ActivityManager.MemoryInfo()
-        requireContext().getSystemService(android.app.ActivityManager::class.java).getMemoryInfo(mi)
+        val mi = ActivityManager.MemoryInfo()
+        requireContext().getSystemService(ActivityManager::class.java).getMemoryInfo(mi)
 
         view.findViewById<TextView>(R.id.device_info).text = buildString {
-            appendLine("Aparelho: ${Build.MANUFACTURER} ${Build.MODEL}")
-            appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
-            appendLine("Patch de seguranca: ${Build.VERSION.SECURITY_PATCH}")
-            appendLine("SoC: ${Build.HARDWARE}")
-            appendLine("Nucleos CPU: ${Runtime.getRuntime().availableProcessors()}")
-            appendLine("RAM total: ${mi.totalMem / 1048576L} MB")
-            appendLine("Kernel: ${System.getProperty("os.version")}")
-            appendLine("Root: ${if (EtApp.rootAvailable) "sim" else "nao"}")
+            appendLine(getString(R.string.device_line_name, "${Build.MANUFACTURER} ${Build.MODEL}"))
+            appendLine(getString(R.string.device_line_android, "${Build.VERSION.RELEASE}", "${Build.VERSION.SDK_INT}"))
+            appendLine(getString(R.string.device_line_patch, Build.VERSION.SECURITY_PATCH))
+            appendLine(getString(R.string.device_line_soc, Build.HARDWARE))
+            appendLine(getString(R.string.device_line_cores, Runtime.getRuntime().availableProcessors()))
+            appendLine(getString(R.string.device_line_ram, mi.totalMem / 1048576L))
+            appendLine(getString(R.string.device_line_kernel, System.getProperty("os.version")))
+            appendLine(getString(R.string.device_line_root, if (EtApp.rootAvailable) "sim" else "aguardando..."))
         }
     }
 
@@ -52,32 +58,41 @@ class DeviceFragment : Fragment() {
         val applyBtn = view.findViewById<Button>(R.id.cpu_apply)
         val cpuInfo = view.findViewById<TextView>(R.id.cpu_info)
 
-        if (!EtApp.rootAvailable) {
-            cpuInfo.text = "CPU: requer root"
-            applyBtn.isEnabled = false
-            return
-        }
+        cpuInfo.text = getString(R.string.device_cpu_loading)
+        applyBtn.isEnabled = false
 
-        thread {
-            val curGov = Su.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null")
-            val available = Su.lines("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 2>/dev/null")
-                .flatMap { it.split(" ") }.filter { it.isNotBlank() }
-            val freqs = Su.cmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq 2>/dev/null")
+        EtApp.requestRoot { granted ->
+            if (_root == null) return@requestRoot
+            if (!granted) {
+                cpuInfo.text = getString(R.string.device_cpu_no_root)
+                return@requestRoot
+            }
+            thread {
+                val curGov = Su.read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")
+                val available = Su.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 2>/dev/null")
+                    .split(" ").filter { it.isNotBlank() }
+                val freqs = Su.cmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq 2>/dev/null")
 
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
-                cpuInfo.text = buildString {
-                    appendLine("Governador atual: $curGov")
-                    val mhzList = freqs.lines().filter { it.isNotBlank() }
-                        .mapNotNull { it.trim().toLongOrNull()?.div(1000) }
-                    if (mhzList.isNotEmpty()) appendLine("Frequencias: ${mhzList.joinToString(" / ") { "$it MHz" }}")
-                }
-                if (available.isNotEmpty()) {
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    if (available.isEmpty()) {
+                        cpuInfo.text = getString(R.string.device_cpu_no_root)
+                        return@runOnUiThread
+                    }
+                    cpuInfo.text = buildString {
+                        appendLine(getString(R.string.device_cpu_current, curGov))
+                        val mhzList = freqs.lines().filter { it.isNotBlank() }
+                            .mapNotNull { it.trim().toLongOrNull()?.div(1000) }
+                        if (mhzList.isNotEmpty()) {
+                            add(getString(R.string.device_cpu_freqs, mhzList.joinToString(" / ") { "$it MHz" }))
+                        }
+                    }
                     spinner.adapter = ArrayAdapter(
                         requireContext(), android.R.layout.simple_spinner_dropdown_item, available
                     )
                     val idx = available.indexOf(curGov)
                     if (idx >= 0) spinner.setSelection(idx)
+                    applyBtn.isEnabled = true
                 }
             }
         }
@@ -87,7 +102,7 @@ class DeviceFragment : Fragment() {
             thread {
                 var anyOk = false
                 for (i in 0 until Runtime.getRuntime().availableProcessors()) {
-                    if (Su.ok("echo $gov > /sys/devices/system/cpu/cpu$i/cpufreq/scaling_governor")) anyOk = true
+                    if (Su.writeFileSysfs("/sys/devices/system/cpu/cpu$i/cpufreq/scaling_governor", gov)) anyOk = true
                 }
                 requireActivity().runOnUiThread {
                     if (_root == null) return@runOnUiThread
@@ -96,7 +111,7 @@ class DeviceFragment : Fragment() {
                         if (anyOk) R.string.device_cpu_applied else R.string.boost_no_root,
                         Toast.LENGTH_SHORT
                     ).show()
-                    onViewCreated(requireView(), null)
+                    setupCpu(requireView())
                 }
             }
         }
@@ -108,13 +123,13 @@ class DeviceFragment : Fragment() {
         val applyBtn = view.findViewById<Button>(R.id.spoof_apply)
         val restoreBtn = view.findViewById<Button>(R.id.spoof_restore)
 
-        modelField.hint = Build.MODEL
-        brandField.hint = Build.MANUFACTURER
+        if (modelField.hint.isNullOrBlank()) modelField.hint = Build.MODEL
+        if (brandField.hint.isNullOrBlank()) brandField.hint = Build.MANUFACTURER
 
-        if (!EtApp.rootAvailable) {
-            applyBtn.isEnabled = false
-            restoreBtn.isEnabled = false
-            return
+        EtApp.requestRoot { granted ->
+            if (_root == null) return@requestRoot
+            applyBtn.isEnabled = granted
+            restoreBtn.isEnabled = granted
         }
 
         applyBtn.setOnClickListener {
@@ -124,37 +139,43 @@ class DeviceFragment : Fragment() {
 
             thread {
                 backupOriginals()
-                if (model.isNotBlank()) Su.ok("resetprop ro.product.model '$model'")
-                if (brand.isNotBlank()) Su.ok("resetprop ro.product.brand '$brand'")
-                if (brand.isNotBlank()) Su.ok("resetprop ro.product.manufacturer '$brand'")
-                requireActivity().runOnUiThread {
-                    Toast.makeText(context, R.string.device_spoof_applied, Toast.LENGTH_LONG).show()
+                if (model.isNotBlank()) Su.setProp("ro.product.model", model)
+                if (brand.isNotBlank()) {
+                    Su.setProp("ro.product.brand", brand)
+                    Su.setProp("ro.product.manufacturer", brand)
                 }
+                toastMain(R.string.device_spoof_applied)
             }
         }
 
         restoreBtn.setOnClickListener {
-            thread { restoreOriginals { } }
+            thread {
+                val model = Su.read("/data/local/tmp/ettoolbox_orig_model").trim()
+                val brand = Su.read("/data/local/tmp/ettoolbox_orig_brand").trim()
+                if (model.isNotBlank()) Su.setProp("ro.product.model", model)
+                if (brand.isNotBlank()) {
+                    Su.setProp("ro.product.brand", brand)
+                    Su.setProp("ro.product.manufacturer", brand)
+                }
+                toastMain(R.string.device_spoof_restored)
+            }
         }
     }
 
     private fun backupOriginals() {
-        Su.ok("[ -f /data/local/tmp/ettoolbox_orig_model ] || resetprop ro.product.model > /data/local/tmp/ettoolbox_orig_model")
-        Su.ok("[ -f /data/local/tmp/ettoolbox_orig_brand ] || resetprop ro.product.brand > /data/local/tmp/ettoolbox_orig_brand")
+        val origModel = Su.prop("ro.product.model")
+        val origBrand = Su.prop("ro.product.brand")
+        if (!Su.exists("/data/local/tmp/ettoolbox_orig_model") && origModel.isNotBlank()) {
+            Su.write("/data/local/tmp/ettoolbox_orig_model", origModel)
+        }
+        if (!Su.exists("/data/local/tmp/ettoolbox_orig_brand") && origBrand.isNotBlank()) {
+            Su.write("/data/local/tmp/ettoolbox_orig_brand", origBrand)
+        }
     }
 
-    private fun restoreOriginals(done: () -> Unit) {
-        val model = Su.cmd("cat /data/local/tmp/ettoolbox_orig_model 2>/dev/null").trim()
-        val brand = Su.cmd("cat /data/local/tmp/ettoolbox_orig_brand 2>/dev/null").trim()
-        if (model.isNotBlank()) Su.ok("resetprop ro.product.model '$model'")
-        if (brand.isNotBlank()) {
-            Su.ok("resetprop ro.product.brand '$brand'")
-            Su.ok("resetprop ro.product.manufacturer '$brand'")
-        }
+    private fun toastMain(resId: Int) {
         requireActivity().runOnUiThread {
-            if (_root != null) {
-                Toast.makeText(context, R.string.device_spoof_restored, Toast.LENGTH_LONG).show()
-            }
+            if (_root != null) Toast.makeText(context, resId, Toast.LENGTH_LONG).show()
         }
     }
 

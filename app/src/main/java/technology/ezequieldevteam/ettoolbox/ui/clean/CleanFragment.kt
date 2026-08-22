@@ -32,21 +32,27 @@ class CleanFragment : Fragment() {
     }
 
     private fun cleanCache() {
-        if (!EtApp.rootAvailable) {
-            Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
-            return
-        }
-        val btn = requireView().findViewById<Button>(R.id.btn_clean_cache)
-        val status = requireView().findViewById<TextView>(R.id.clean_status)
+        val view = _root ?: return
+        val btn = view.findViewById<Button>(R.id.btn_clean_cache)
+        val status = view.findViewById<TextView>(R.id.clean_status)
         btn.isEnabled = false
         status.text = "Limpando..."
-        thread {
-            Su.ok("pm trim-caches 999999999999")
-            val freed = Su.cmd("df -h /data | tail -1 | awk '{print $4}'")
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+        EtApp.requestRoot { granted ->
+            if (_root == null) return@requestRoot
+            if (!granted) {
+                Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
                 btn.isEnabled = true
-                status.text = getString(R.string.clean_cache_done, if (freed.isBlank()) "ok" else freed)
+                status.text = ""
+                return@requestRoot
+            }
+            thread {
+                Su.ok("pm trim-caches 999999999999")
+                val freed = Su.cmd("df -h /data | tail -1 | awk '{print $4}'")
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    btn.isEnabled = true
+                    status.text = getString(R.string.clean_cache_done, if (freed.isBlank()) "ok" else freed)
+                }
             }
         }
     }
@@ -55,27 +61,35 @@ class CleanFragment : Fragment() {
         val recycler = view.findViewById<RecyclerView>(R.id.bloat_list)
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        thread {
-            val installedPkgs = if (EtApp.rootAvailable) Su.cmd("pm list packages") else ""
-            val data = BloatCatalog.all.map {
-                it to installedPkgs.contains("package:${it.packageName}")
-            }
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
-                recycler.adapter = BloatAdapter(data) { item, wasDisabled ->
-                    thread {
-                        if (wasDisabled) {
-                            Su.ok("pm enable ${item.packageName}")
-                        } else {
-                            Su.ok("pm disable-user --user 0 ${item.packageName}")
-                        }
-                        requireActivity().runOnUiThread {
-                            (recycler.adapter as? BloatAdapter)?.notifyDataSetChanged()
+        EtApp.requestRoot { granted ->
+            if (_root == null) return@requestRoot
+            thread {
+                val installedPkgs = if (granted) Su.cmd("pm list packages") else ""
+                val data = BloatCatalog.all.map {
+                    it to installedPkgs.contains("package:${it.packageName}")
+                }
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    recycler.adapter = BloatAdapter(data) { item, wasDisabled ->
+                        thread {
+                            if (wasDisabled) {
+                                Su.ok("pm enable ${item.packageName}")
+                            } else {
+                                Su.ok("pm disable-user --user 0 ${item.packageName}")
+                            }
+                            requireActivity().runOnUiThread {
+                                (recycler.adapter as? BloatAdapter)?.notifyDataSetChanged()
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.let { setupBloatList(it) }
     }
 
     override fun onDestroyView() {

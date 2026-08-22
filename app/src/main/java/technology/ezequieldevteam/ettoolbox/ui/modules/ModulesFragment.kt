@@ -35,7 +35,12 @@ class ModulesFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
         if (!EtApp.rootAvailable) {
-            status.text = getString(R.string.modules_none)
+            status.text = getString(R.string.modules_loading)
+            EtApp.requestRoot { granted ->
+                if (_root == null) return@requestRoot
+                if (granted) loadModules(requireView())
+                else status.text = getString(R.string.modules_none)
+            }
             return
         }
 

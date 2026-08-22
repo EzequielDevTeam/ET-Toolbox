@@ -52,25 +52,29 @@ class BoostFragment : Fragment() {
     }
 
     private fun gameMode() {
-        if (!EtApp.rootAvailable) {
-            Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
-            return
-        }
         binding.btnGameMode.isEnabled = false
-        thread {
-            Su.cmd("am kill-all")
-            Su.ok("pm trim-caches 999999999999")
-            Su.cmd("sync; echo 3 > /proc/sys/vm/drop_caches")
-            val freeAfter = memInfo().first
-            requireActivity().runOnUiThread {
-                if (_binding == null) return@runOnUiThread
+        EtApp.requestRoot { granted ->
+            if (_binding == null) return@requestRoot
+            if (!granted) {
+                Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
                 binding.btnGameMode.isEnabled = true
-                updateRam()
-                Toast.makeText(
-                    context,
-                    getString(R.string.boost_done, freeAfter.toString()),
-                    Toast.LENGTH_LONG
-                ).show()
+                return@requestRoot
+            }
+            thread {
+                Su.cmd("am kill-all")
+                Su.ok("pm trim-caches 999999999999")
+                Su.cmd("sync; echo 3 > /proc/sys/vm/drop_caches")
+                val freeAfter = memInfo().first
+                requireActivity().runOnUiThread {
+                    if (_binding == null) return@runOnUiThread
+                    binding.btnGameMode.isEnabled = true
+                    updateRam()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.boost_done, freeAfter.toString()),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }

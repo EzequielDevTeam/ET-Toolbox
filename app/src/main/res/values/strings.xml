@@ -16,10 +16,25 @@
 
     <string name="troll_hint_title">Título da notificação</string>
     <string name="troll_hint_body">Texto da notificação</string>
-    <string name="troll_delay">Atraso em segundos (0 = imediato)</string>
+    <string name="troll_delay">Atraso (0 = imediato)</string>
     <string name="troll_send">Disparar</string>
+    <string name="troll_cancel">Cancelar</string>
+    <string name="troll_vibrate">Vibrar junto</string>
+    <string name="troll_scheduled">Agendado: dispara em %1$s %2$s</string>
+    <string name="troll_cancelled">Notificações agendadas canceladas.</string>
+    <string name="troll_nothing_pending">Nada agendado para cancelar.</string>
     <string name="troll_sent">Notificação disparada</string>
     <string name="troll_presets">Presets prontos</string>
+
+    <string-array name="troll_units">
+        <item>Segundos</item>
+        <item>Minutos</item>
+        <item>Horas</item>
+    </string-array>
+
+    <string name="banner_root_needed">Acesso root necessário para as funções do sistema.</string>
+    <string name="banner_grant">Conceder root</string>
+    <string name="root_granted">Root concedido!</string>
 
     <string name="clean_cache_btn">Limpar cache de todos os aplicativos</string>
     <string name="clean_cache_done">Cache limpo: %1$s liberados</string>
@@ -29,6 +44,7 @@
     <string name="clean_disabled">(desativado)</string>
 
     <string name="modules_none">Nenhum módulo instalado ou sem acesso root.</string>
+    <string name="modules_loading">Carregando módulos…</string>
     <string name="modules_state_on">Ativo</string>
     <string name="modules_state_off">Desativado</string>
     <string name="modules_toggle">Alternar</string>
@@ -46,6 +62,19 @@
     <string name="device_cpu_governor">Governador da CPU</string>
     <string name="device_cpu_apply">Aplicar governador</string>
     <string name="device_cpu_applied">Governador aplicado a todos os núcleos.</string>
+    <string name="device_cpu_loading">Carregando informações da CPU…</string>
+    <string name="device_cpu_no_root">Sem acesso root à CPU.</string>
+    <string name="device_cpu_current">Governador atual: %1$s</string>
+    <string name="device_cpu_freqs">Frequências: %1$s</string>
+
+    <string name="device_line_name">Aparelho: %1$s</string>
+    <string name="device_line_android">Android: %1$s (API %2$s)</string>
+    <string name="device_line_patch">Patch de segurança: %1$s</string>
+    <string name="device_line_soc">SoC: %1$s</string>
+    <string name="device_line_cores">Núcleos CPU: %1$s</string>
+    <string name="device_line_ram">RAM total: %1$s MB</string>
+    <string name="device_line_kernel">Kernel: %1$s</string>
+    <string name="device_line_root">Root: %1$s</string>
 
     <string name="soon">Em construção</string>
 </resources>
