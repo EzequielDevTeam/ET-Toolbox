@@ -84,7 +84,7 @@ class DeviceFragment : Fragment() {
                         val mhzList = freqs.lines().filter { it.isNotBlank() }
                             .mapNotNull { it.trim().toLongOrNull()?.div(1000) }
                         if (mhzList.isNotEmpty()) {
-                            add(getString(R.string.device_cpu_freqs, mhzList.joinToString(" / ") { "$it MHz" }))
+                            append(getString(R.string.device_cpu_freqs, mhzList.joinToString(" / ") { "$it MHz" }))
                         }
                     }
                     spinner.adapter = ArrayAdapter(
