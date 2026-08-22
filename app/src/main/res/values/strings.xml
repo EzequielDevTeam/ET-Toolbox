@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ET Toolbox</string>
+    <string name="tab_boost">Boost</string>
+    <string name="tab_troll">Troll</string>
+    <string name="tab_clean">Limpeza</string>
+    <string name="tab_device">Aparelho</string>
+    <string name="tab_cpu">CPU</string>
+    <string name="tab_spoof">Spoof</string>
+    <string name="boost_ram">RAM livre: %1$s / %2$s</string>
+    <string name="boost_go">MODO JOGO 🎮</string>
+    <string name="troll_title">Título da notificação</string>
+    <string name="troll_body">Texto da notificação</string>
+    <string name="troll_send">DISPARAR 💣</string>
+    <string name="soon">Em construção… 🚧</string>
+</resources>

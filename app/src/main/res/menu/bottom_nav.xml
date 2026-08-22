@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_boost" android:title="@string/tab_boost" />
+    <item android:id="@+id/nav_troll" android:title="@string/tab_troll" />
+    <item android:id="@+id/nav_clean" android:title="@string/tab_clean" />
+    <item android:id="@+id/nav_device" android:title="@string/tab_device" />
+    <item android:id="@+id/nav_cpu" android:title="@string/tab_cpu" />
+    <item android:id="@+id/nav_spoof" android:title="@string/tab_spoof" />
+</menu>
