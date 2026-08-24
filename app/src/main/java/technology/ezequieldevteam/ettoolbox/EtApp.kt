@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
+import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
+import technology.ezequieldevteam.ettoolbox.rootcmd.LibsurootRunner
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
 
@@ -62,6 +64,7 @@ class EtApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Root.runner = LibsuRunner()
         DynamicColors.applyToActivitiesIfAvailable(this)
         requestRoot()
     }

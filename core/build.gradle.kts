@@ -10,7 +10,3 @@ java {
 kotlin {
     jvmToolchain(17)
 }
-
-dependencies {
-    compileOnly("com.github.topjohnwu.libsu:core:6.0.0")
-}
