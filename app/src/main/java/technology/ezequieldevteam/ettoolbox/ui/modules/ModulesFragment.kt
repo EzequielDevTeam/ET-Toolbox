@@ -20,8 +20,16 @@ class ModulesFragment : Fragment() {
     private var _root: View? = null
     private var allModules: List<MagiskRow> = emptyList()
 
+    private fun ui(block: () -> Unit) {
+        activity?.runOnUiThread {
+            if (_root != null) block()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_modules, container, false)
+        val v = inflater.inflate(R.layout.fragment_modules, container, false)
+        _root = v
+        return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,9 +74,8 @@ class ModulesFragment : Fragment() {
         }
 
         MagiskRepo.list { rows, error ->
-            if (_root == null) return@list
-            requireActivity().runOnUiThread {
-                val v = _root ?: return@runOnUiThread
+            ui {
+                val v = _root ?: return@ui
                 if (error != null) {
                     status.text = ""
                     val err = v.findViewById<TextView>(R.id.modules_error)
@@ -76,7 +83,7 @@ class ModulesFragment : Fragment() {
                     err.text = getString(R.string.modules_error_prefix, error)
                     allModules = emptyList()
                     applyFilter()
-                    return@runOnUiThread
+                    return@ui
                 }
                 allModules = rows
                 status.text =
@@ -102,8 +109,7 @@ class ModulesFragment : Fragment() {
 
     private fun toggle(m: MagiskRow) {
         MagiskRepo.toggle(m.id, m.enabled) { ok ->
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+            ui {
                 Toast.makeText(
                     context,
                     if (ok) R.string.modules_toggled else R.string.modules_action_failed,
@@ -120,8 +126,7 @@ class ModulesFragment : Fragment() {
             .setMessage(getString(R.string.modules_remove_confirm_body, m.name))
             .setPositiveButton(R.string.modules_remove) { _, _ ->
                 MagiskRepo.markRemove(m.id) { ok ->
-                    requireActivity().runOnUiThread {
-                        if (_root == null) return@runOnUiThread
+                    ui {
                         Toast.makeText(
                             context,
                             if (ok) R.string.modules_removed else R.string.modules_action_failed,

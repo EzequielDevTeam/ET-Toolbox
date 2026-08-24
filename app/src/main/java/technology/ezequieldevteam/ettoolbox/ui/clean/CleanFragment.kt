@@ -20,6 +20,12 @@ class CleanFragment : Fragment() {
 
     private var _root: View? = null
 
+    private fun ui(block: () -> Unit) {
+        activity?.runOnUiThread {
+            if (_root != null) block()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.fragment_clean, container, false)
         _root = v
@@ -35,8 +41,7 @@ class CleanFragment : Fragment() {
     private fun loadStorage(view: View) {
         val storageView = view.findViewById<TextView>(R.id.storage_free)
         SysRepo.storageFree { line ->
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+            ui {
                 if (line.isNotBlank()) storageView.text = line
             }
         }
@@ -50,10 +55,8 @@ class CleanFragment : Fragment() {
         status.text = getString(R.string.clean_working)
 
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
             if (!granted) {
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
                     btn.isEnabled = true
                     status.text = ""
@@ -63,14 +66,13 @@ class CleanFragment : Fragment() {
             Thread {
                 Root.ok("pm trim-caches 999999999999")
                 SysRepo.storageFree { freed ->
-                    requireActivity().runOnUiThread {
-                        if (_root == null) return@runOnUiThread
+                    ui {
                         btn.isEnabled = true
                         status.text = getString(
                             R.string.clean_cache_done,
                             if (freed.isBlank()) "ok" else freed
                         )
-                        loadStorage(requireView())
+                        loadStorage(view)
                     }
                 }
             }.start()
@@ -82,15 +84,13 @@ class CleanFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
             Thread {
                 val installedPkgs =
                     if (granted) Root.cmd("pm list packages") else ""
                 val data = BloatCatalog.all.map {
                     it to installedPkgs.contains("package:${it.packageName}")
                 }
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     recycler.adapter = BloatAdapter(data) { item, wasDisabled ->
                         Thread {
                             if (wasDisabled) {
@@ -98,7 +98,7 @@ class CleanFragment : Fragment() {
                             } else {
                                 Root.ok("pm disable-user --user 0 ${item.packageName}")
                             }
-                            requireActivity().runOnUiThread {
+                            ui {
                                 (recycler.adapter as? BloatAdapter)?.notifyDataSetChanged()
                             }
                         }.start()

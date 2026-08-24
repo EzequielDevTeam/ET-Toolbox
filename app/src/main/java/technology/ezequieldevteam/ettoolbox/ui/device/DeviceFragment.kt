@@ -1,6 +1,9 @@
 package technology.ezequieldevteam.ettoolbox.ui.device
 
 import android.app.ActivityManager
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,16 +19,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
+import technology.ezequieldevteam.ettoolbox.core.model.BatteryInfo
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 import technology.ezequieldevteam.ettoolbox.core.repo.CpuRepo
 import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
+import kotlin.concurrent.thread
 
 class DeviceFragment : Fragment() {
 
     private var _root: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_device, container, false)
+        val v = inflater.inflate(R.layout.fragment_device, container, false)
+        _root = v
+        return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,6 +47,12 @@ class DeviceFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         view?.let { setupCpu(it) }
+    }
+
+    private fun ui(block: () -> Unit) {
+        activity?.runOnUiThread {
+            if (_root != null) block()
+        }
     }
 
     private fun fillDeviceInfo(view: View) {
@@ -65,63 +78,60 @@ class DeviceFragment : Fragment() {
 
         cpuInfo.text = getString(R.string.device_cpu_loading)
 
-        val start = {
-            CpuRepo.read { info ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    if (info.error != null || info.availableGovernors.isEmpty()) {
-                        cpuInfo.text = getString(
-                            R.string.device_cpu_error,
-                            info.error ?: getString(R.string.device_cpu_no_root)
-                        )
-                        applyBtn.isEnabled = false
-                        return@runOnUiThread
-                    }
-                    cpuInfo.text = buildString {
-                        appendLine(getString(R.string.device_cpu_current, info.currentGovernor))
-                        if (info.freqsMhz.isNotEmpty()) {
-                            appendLine(getString(R.string.device_cpu_freqs,
-                                info.freqsMhz.joinToString(" / ") { "$it" }))
-                        }
-                        if (info.minMhz != null && info.maxMhz != null) {
-                            append(getString(R.string.device_cpu_minmax, info.minMhz, info.maxMhz))
-                        }
-                    }
-                    spinner.adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_dropdown_item,
-                        info.availableGovernors
-                    )
-                    val idx = info.availableGovernors.indexOf(info.currentGovernor)
-                    if (idx >= 0) spinner.setSelection(idx)
-                    applyBtn.isEnabled = true
-                }
-            }
-        }
+        thread(name = "et-cpu-read") {
+            var info = CpuRepo.readFast()
 
-        if (!EtApp.rootAvailable) {
-            EtApp.requestRoot { granted ->
-                if (_root == null) return@requestRoot
-                if (!granted) {
-                    requireActivity().runOnUiThread {
-                        if (_root == null) return@runOnUiThread
-                        cpuInfo.text = getString(R.string.device_cpu_no_root)
-                        applyBtn.isEnabled = false
-                    }
-                } else {
-                    start()
+            if (info.availableGovernors.isEmpty()) {
+                val latch = java.util.concurrent.CountDownLatch(1)
+                CpuRepo.read { r ->
+                    info = r
+                    latch.countDown()
                 }
+                latch.await(16, java.util.concurrent.TimeUnit.SECONDS)
             }
-        } else {
-            start()
+
+            ui {
+                val governors = info.availableGovernors
+                if (info.error != null && governors.isEmpty()) {
+                    cpuInfo.text = getString(
+                        R.string.device_cpu_error,
+                        info.error ?: getString(R.string.device_cpu_no_root)
+                    )
+                    applyBtn.isEnabled = false
+                    return@ui
+                }
+                cpuInfo.text = buildString {
+                    if (info.currentGovernor.isNotBlank()) {
+                        appendLine(getString(R.string.device_cpu_current, info.currentGovernor))
+                    }
+                    if (info.freqsMhz.isNotEmpty()) {
+                        appendLine(
+                            getString(
+                                R.string.device_cpu_freqs,
+                                info.freqsMhz.joinToString(" / ")
+                            )
+                        )
+                    }
+                    if (info.minMhz != null && info.maxMhz != null) {
+                        append(getString(R.string.device_cpu_minmax, info.minMhz!!, info.maxMhz!!))
+                    }
+                }
+                spinner.adapter = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    governors
+                )
+                val idx = governors.indexOf(info.currentGovernor)
+                if (idx >= 0) spinner.setSelection(idx)
+                applyBtn.isEnabled = true
+            }
         }
 
         applyBtn.setOnClickListener {
             val gov = spinner.selectedItem as? String ?: return@setOnClickListener
             applyBtn.isEnabled = false
             CpuRepo.applyGovernor(gov, Runtime.getRuntime().availableProcessors()) { ok ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     Toast.makeText(
                         context,
                         if (ok) R.string.device_cpu_applied else R.string.modules_action_failed,
@@ -135,12 +145,11 @@ class DeviceFragment : Fragment() {
 
     private fun setupBattery(view: View) {
         val info = view.findViewById<TextView>(R.id.battery_info)
-        info.text = getString(R.string.device_battery_loading)
-        SysRepo.battery { b ->
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+        thread(name = "et-battery") {
+            val b = readBatteryNoRoot()
+            ui {
                 info.text =
-                    if (b == null) getString(R.string.device_cpu_error, "bateria indisponível")
+                    if (b == null) getString(R.string.device_battery_unavailable)
                     else getString(
                         R.string.device_battery_line,
                         b.level, b.charging, b.health, b.tempC, b.voltageMV
@@ -149,36 +158,51 @@ class DeviceFragment : Fragment() {
         }
     }
 
+    private fun readBatteryNoRoot(): BatteryInfo? {
+        return try {
+            val intent = requireContext().registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+                ?: return null
+            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
+            if (level < 0) return null
+            val pct = level * 100 / scale.coerceAtLeast(1)
+            BatteryInfo(
+                level = pct,
+                tempC = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10.0,
+                health = healthName(intent.getIntExtra(BatteryManager.EXTRA_HEALTH, 0)),
+                voltageMV = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0) / 1000,
+                charging = chargeName(intent.getIntExtra(BatteryManager.EXTRA_STATUS, 0))
+            )
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun healthName(code: Int) = when (code) {
+        BatteryManager.BATTERY_HEALTH_GOOD -> "Boa"
+        BatteryManager.BATTERY_HEALTH_OVERHEAT -> "Superaquecida"
+        BatteryManager.BATTERY_HEALTH_DEAD -> "Morta"
+        BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE -> "Sobretensão"
+        BatteryManager.BATTERY_HEALTH_COLD -> "Fria"
+        else -> "Desconhecida"
+    }
+
+    private fun chargeName(code: Int) = when (code) {
+        BatteryManager.BATTERY_STATUS_CHARGING -> "Carregando"
+        BatteryManager.BATTERY_STATUS_DISCHARGING -> "Descarregando"
+        BatteryManager.BATTERY_STATUS_NOT_CHARGING -> "Não carregando"
+        BatteryManager.BATTERY_STATUS_FULL -> "Cheia"
+        else -> "Desconhecido"
+    }
+
     private fun setupDensity(view: View) {
         val current = view.findViewById<TextView>(R.id.density_current)
         val valueField = view.findViewById<EditText>(R.id.density_value)
         val applyBtn = view.findViewById<Button>(R.id.density_apply)
         val resetBtn = view.findViewById<Button>(R.id.density_reset)
 
-        current.text = getString(R.string.device_density_loading)
-        applyBtn.isEnabled = false
-        resetBtn.isEnabled = false
-
-        val load = {
-            SysRepo.densityCurrent { value, error ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    if (value != null) {
-                        current.text = getString(R.string.device_density_current, value)
-                        applyBtn.isEnabled = true
-                        resetBtn.isEnabled = true
-                    } else {
-                        current.text = getString(R.string.device_cpu_error, error ?: "?")
-                    }
-                }
-            }
-        }
-
-        if (!EtApp.rootAvailable) {
-            EtApp.requestRoot { granted ->
-                if (granted && _root != null) load()
-            }
-        } else load()
+        val dpi = resources.displayMetrics.densityDpi
+        current.text = getString(R.string.device_density_current, dpi)
 
         applyBtn.setOnClickListener {
             val v = valueField.text.toString().trim().toIntOrNull()
@@ -186,29 +210,29 @@ class DeviceFragment : Fragment() {
                 Toast.makeText(context, R.string.device_density_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            applyBtn.isEnabled = false
             SysRepo.densitySet(v) { ok ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
+                    applyBtn.isEnabled = true
                     Toast.makeText(
                         context,
                         if (ok) R.string.device_density_done else R.string.modules_action_failed,
                         Toast.LENGTH_SHORT
                     ).show()
-                    load()
                 }
             }
         }
 
         resetBtn.setOnClickListener {
+            resetBtn.isEnabled = false
             SysRepo.densityReset { ok ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
+                    resetBtn.isEnabled = true
                     Toast.makeText(
                         context,
                         if (ok) R.string.device_density_reset_done else R.string.modules_action_failed,
                         Toast.LENGTH_SHORT
                     ).show()
-                    load()
                 }
             }
         }
@@ -245,9 +269,7 @@ class DeviceFragment : Fragment() {
         if (brandField.hint.isNullOrBlank()) brandField.hint = Build.MANUFACTURER
 
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+            ui {
                 applyBtn.isEnabled = granted
                 restoreBtn.isEnabled = granted
             }
@@ -258,22 +280,19 @@ class DeviceFragment : Fragment() {
             val brand = brandField.text.toString().trim()
             if (model.isBlank() && brand.isBlank()) return@setOnClickListener
 
-            Thread {
+            thread {
                 backupOriginals()
                 if (model.isNotBlank()) Root.ok("setprop ro.product.model \"$model\"")
                 if (brand.isNotBlank()) {
                     Root.ok("setprop ro.product.brand \"$brand\"")
                     Root.ok("setprop ro.product.manufacturer \"$brand\"")
                 }
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    Toast.makeText(context, R.string.device_spoof_applied, Toast.LENGTH_LONG).show()
-                }
-            }.start()
+                ui { Toast.makeText(context, R.string.device_spoof_applied, Toast.LENGTH_LONG).show() }
+            }
         }
 
         restoreBtn.setOnClickListener {
-            Thread {
+            thread {
                 val model = Root.cmd("cat /data/local/tmp/ettoolbox_orig_model 2>/dev/null").trim()
                 val brand = Root.cmd("cat /data/local/tmp/ettoolbox_orig_brand 2>/dev/null").trim()
                 if (model.isNotBlank()) Root.ok("setprop ro.product.model \"$model\"")
@@ -281,11 +300,8 @@ class DeviceFragment : Fragment() {
                     Root.ok("setprop ro.product.brand \"$brand\"")
                     Root.ok("setprop ro.product.manufacturer \"$brand\"")
                 }
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    Toast.makeText(context, R.string.device_spoof_restored, Toast.LENGTH_LONG).show()
-                }
-            }.start()
+                ui { Toast.makeText(context, R.string.device_spoof_restored, Toast.LENGTH_LONG).show() }
+            }
         }
     }
 

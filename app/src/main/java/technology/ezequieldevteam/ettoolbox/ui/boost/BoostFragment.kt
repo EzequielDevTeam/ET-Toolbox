@@ -13,13 +13,22 @@ import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
+import kotlin.concurrent.thread
 
 class BoostFragment : Fragment() {
 
     private var _root: View? = null
 
+    private fun ui(block: () -> Unit) {
+        activity?.runOnUiThread {
+            if (_root != null) block()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_boost, container, false)
+        val v = inflater.inflate(R.layout.fragment_boost, container, false)
+        _root = v
+        return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,9 +41,8 @@ class BoostFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val v = _root ?: return
-        updateRam(v)
-        loadExtras(v)
+        _root?.let { updateRam(it) }
+        loadExtras()
     }
 
     private fun memInfo(): Pair<Long, Long> {
@@ -44,50 +52,35 @@ class BoostFragment : Fragment() {
     }
 
     private fun updateRam(view: View) {
-        Thread {
+        thread(name = "et-ram") {
             val (free, total) = memInfo()
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
+            ui {
                 view.findViewById<TextView>(R.id.ram_info).text =
                     getString(R.string.boost_ram, "$free MB", "$total MB")
             }
-        }.start()
+        }
     }
 
-    private fun loadExtras(view: View) {
-        val extra = view.findViewById<TextView>(R.id.boost_extra_info)
+    private fun loadExtras() {
+        val view = _root ?: return
         SysRepo.zramLine { line ->
-            requireActivity().runOnUiThread {
-                if (_root == null) return@runOnUiThread
-                extra.text = line
-            }
+            ui { view.findViewById<TextView>(R.id.boost_extra_info).text = line }
         }
 
-        val animCurrent = view.findViewById<TextView>(R.id.anim_current)
-        animCurrent.text = getString(R.string.boost_anim_loading)
-
-        val refresh = {
-            SysRepo.animationsGet { scale ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    animCurrent.text =
-                        getString(
-                            R.string.boost_anim_current,
-                            when {
-                                scale <= 0.0 -> getString(R.string.boost_anim_off)
-                                scale <= 0.5 -> "0.5x"
-                                else -> "1x"
-                            }
-                        )
-                }
+        view.findViewById<TextView>(R.id.anim_current).text = getString(R.string.boost_anim_loading)
+        SysRepo.animationsGet { scale ->
+            ui {
+                _root?.findViewById<TextView>(R.id.anim_current)?.text =
+                    getString(
+                        R.string.boost_anim_current,
+                        when {
+                            scale <= 0.0 -> getString(R.string.boost_anim_off)
+                            scale <= 0.5 -> "0.5x"
+                            else -> "1x"
+                        }
+                    )
             }
         }
-
-        if (!EtApp.rootAvailable) {
-            EtApp.requestRoot { granted ->
-                if (granted && _root != null) refresh()
-            }
-        } else refresh()
     }
 
     private fun gameMode() {
@@ -96,53 +89,45 @@ class BoostFragment : Fragment() {
         btn.isEnabled = false
 
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
             if (!granted) {
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
                     btn.isEnabled = true
                 }
                 return@requestRoot
             }
-            Thread {
+            thread(name = "et-game") {
                 Root.cmd("am kill-all")
                 Root.ok("pm trim-caches 999999999999")
                 Root.cmd("sync; echo 3 > /proc/sys/vm/drop_caches")
                 val freeAfter = memInfo().first
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     btn.isEnabled = true
-                    updateRam(requireView())
+                    _root?.let { updateRam(it) }
                     Toast.makeText(
                         context,
                         getString(R.string.boost_done, freeAfter.toString()),
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }.start()
+            }
         }
     }
 
     private fun setAnimations(scale: String) {
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
             if (!granted) {
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_SHORT).show()
-                }
+                ui { Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_SHORT).show() }
                 return@requestRoot
             }
             SysRepo.animationsSet(scale) { ok ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     Toast.makeText(
                         context,
                         if (ok) R.string.boost_anim_done else R.string.modules_action_failed,
                         Toast.LENGTH_SHORT
                     ).show()
-                    loadExtras(requireView())
+                    loadExtras()
                 }
             }
         }
@@ -150,17 +135,12 @@ class BoostFragment : Fragment() {
 
     private fun fstrim() {
         EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
             if (!granted) {
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
-                    Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_SHORT).show()
-                }
+                ui { Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_SHORT).show() }
                 return@requestRoot
             }
             SysRepo.fstrim { ok, out ->
-                requireActivity().runOnUiThread {
-                    if (_root == null) return@runOnUiThread
+                ui {
                     Toast.makeText(
                         context,
                         getString(

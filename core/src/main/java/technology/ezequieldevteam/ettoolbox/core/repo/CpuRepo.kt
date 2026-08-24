@@ -2,10 +2,46 @@ package technology.ezequieldevteam.ettoolbox.core.repo
 
 import technology.ezequieldevteam.ettoolbox.core.model.CpuInfo
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
+import java.io.File
 
 object CpuRepo {
 
     private const val BASE = "/sys/devices/system/cpu"
+
+    /**
+     * Leitura direta dos arquivos cpufreq (world-readable): nao precisa de
+     * root e nao passa pelo shell - instantanea.
+     */
+    fun readFast(): technology.ezequieldevteam.ettoolbox.core.model.CpuInfo {
+        fun read(path: String): String =
+            try { File(path).readText().trim() } catch (_: Exception) { "" }
+
+        val gov = read("$BASE/cpu0/cpufreq/scaling_governor")
+        val avail = read("$BASE/cpu0/cpufreq/scaling_available_governors")
+            .split(' ').filter { it.isNotBlank() }
+
+        val cores = File(BASE)
+            .listFiles { f -> f.isDirectory && Regex("cpu\\d+").matches(f.name) }
+            ?.mapNotNull { it.name.drop(3).toIntOrNull() }
+            ?.sorted()
+            ?: emptyList()
+
+        val mhz = cores.mapNotNull {
+            read("$BASE/cpu$it/cpufreq/scaling_cur_freq").toLongOrNull()?.div(1000)
+        }
+
+        val minKhz = read("$BASE/cpu0/cpufreq/scaling_min_freq").toLongOrNull()
+        val maxKhz = read("$BASE/cpu0/cpufreq/scaling_max_freq").toLongOrNull()
+
+        return CpuInfo(
+            currentGovernor = gov,
+            availableGovernors = avail,
+            freqsMhz = mhz,
+            minMhz = minKhz?.div(1000),
+            maxMhz = maxKhz?.div(1000),
+            error = if (avail.isEmpty()) "arquivos cpufreq não acessíveis" else null
+        )
+    }
 
     private const val READ_SCRIPT =
         "g=\$(cat $BASE/cpu0/cpufreq/scaling_governor 2>/dev/null); " +

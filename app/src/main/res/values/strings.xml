@@ -105,6 +105,7 @@
 
     <string name="device_battery_title">Bateria</string>
     <string name="device_battery_loading">Lendo bateria…</string>
+    <string name="device_battery_unavailable">Não foi possível ler a bateria.</string>
     <string name="device_battery_line">Nível: %1$d%% (%2$s)\nSaúde: %3$s | Temperatura: %4$.1f °C | Tensão: %5$d mV</string>
 
     <string name="device_density_title">Densidade da tela</string>
