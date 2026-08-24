@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ET Toolbox"
 include(":app")
+include(":core")

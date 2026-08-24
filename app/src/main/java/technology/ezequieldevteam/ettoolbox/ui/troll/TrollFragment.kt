@@ -25,7 +25,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.chip.Chip
 import technology.ezequieldevteam.ettoolbox.MainActivity
 import technology.ezequieldevteam.ettoolbox.R
-import technology.ezequieldevteam.ettoolbox.data.TrollPresets
+import technology.ezequieldevteam.ettoolbox.core.data.TrollPresets
 import technology.ezequieldevteam.ettoolbox.databinding.FragmentTrollBinding
 
 class TrollFragment : Fragment() {

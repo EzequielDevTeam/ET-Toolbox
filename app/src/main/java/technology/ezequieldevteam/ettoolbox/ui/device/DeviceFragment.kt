@@ -12,11 +12,13 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
-import technology.ezequieldevteam.ettoolbox.root.Su
-import kotlin.concurrent.thread
+import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
+import technology.ezequieldevteam.ettoolbox.core.repo.CpuRepo
+import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
 
 class DeviceFragment : Fragment() {
 
@@ -29,6 +31,9 @@ class DeviceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fillDeviceInfo(view)
         setupCpu(view)
+        setupBattery(view)
+        setupDensity(view)
+        setupReboot(view)
         setupSpoof(view)
     }
 
@@ -49,7 +54,7 @@ class DeviceFragment : Fragment() {
             appendLine(getString(R.string.device_line_cores, Runtime.getRuntime().availableProcessors()))
             appendLine(getString(R.string.device_line_ram, mi.totalMem / 1048576L))
             appendLine(getString(R.string.device_line_kernel, System.getProperty("os.version")))
-            appendLine(getString(R.string.device_line_root, if (EtApp.rootAvailable) "sim" else "aguardando..."))
+            append(getString(R.string.device_line_root, if (EtApp.rootAvailable) "sim" else "aguardando..."))
         }
     }
 
@@ -59,62 +64,175 @@ class DeviceFragment : Fragment() {
         val cpuInfo = view.findViewById<TextView>(R.id.cpu_info)
 
         cpuInfo.text = getString(R.string.device_cpu_loading)
-        applyBtn.isEnabled = false
 
-        EtApp.requestRoot { granted ->
-            if (_root == null) return@requestRoot
-            if (!granted) {
-                cpuInfo.text = getString(R.string.device_cpu_no_root)
-                return@requestRoot
-            }
-            thread {
-                val curGov = Su.read("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")
-                val available = Su.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 2>/dev/null")
-                    .split(" ").filter { it.isNotBlank() }
-                val freqs = Su.cmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq 2>/dev/null")
-
+        val start = {
+            CpuRepo.read { info ->
                 requireActivity().runOnUiThread {
                     if (_root == null) return@runOnUiThread
-                    if (available.isEmpty()) {
-                        cpuInfo.text = getString(R.string.device_cpu_no_root)
+                    if (info.error != null || info.availableGovernors.isEmpty()) {
+                        cpuInfo.text = getString(
+                            R.string.device_cpu_error,
+                            info.error ?: getString(R.string.device_cpu_no_root)
+                        )
+                        applyBtn.isEnabled = false
                         return@runOnUiThread
                     }
                     cpuInfo.text = buildString {
-                        appendLine(getString(R.string.device_cpu_current, curGov))
-                        val mhzList = freqs.lines().filter { it.isNotBlank() }
-                            .mapNotNull { it.trim().toLongOrNull()?.div(1000) }
-                        if (mhzList.isNotEmpty()) {
-                            append(getString(R.string.device_cpu_freqs, mhzList.joinToString(" / ") { "$it MHz" }))
+                        appendLine(getString(R.string.device_cpu_current, info.currentGovernor))
+                        if (info.freqsMhz.isNotEmpty()) {
+                            appendLine(getString(R.string.device_cpu_freqs,
+                                info.freqsMhz.joinToString(" / ") { "$it" }))
+                        }
+                        if (info.minMhz != null && info.maxMhz != null) {
+                            append(getString(R.string.device_cpu_minmax, info.minMhz, info.maxMhz))
                         }
                     }
                     spinner.adapter = ArrayAdapter(
-                        requireContext(), android.R.layout.simple_spinner_dropdown_item, available
+                        requireContext(),
+                        android.R.layout.simple_spinner_dropdown_item,
+                        info.availableGovernors
                     )
-                    val idx = available.indexOf(curGov)
+                    val idx = info.availableGovernors.indexOf(info.currentGovernor)
                     if (idx >= 0) spinner.setSelection(idx)
                     applyBtn.isEnabled = true
                 }
             }
         }
 
+        if (!EtApp.rootAvailable) {
+            EtApp.requestRoot { granted ->
+                if (_root == null) return@requestRoot
+                if (!granted) {
+                    requireActivity().runOnUiThread {
+                        if (_root == null) return@runOnUiThread
+                        cpuInfo.text = getString(R.string.device_cpu_no_root)
+                        applyBtn.isEnabled = false
+                    }
+                } else {
+                    start()
+                }
+            }
+        } else {
+            start()
+        }
+
         applyBtn.setOnClickListener {
             val gov = spinner.selectedItem as? String ?: return@setOnClickListener
-            thread {
-                var anyOk = false
-                for (i in 0 until Runtime.getRuntime().availableProcessors()) {
-                    if (Su.writeFileSysfs("/sys/devices/system/cpu/cpu$i/cpufreq/scaling_governor", gov)) anyOk = true
-                }
+            applyBtn.isEnabled = false
+            CpuRepo.applyGovernor(gov, Runtime.getRuntime().availableProcessors()) { ok ->
                 requireActivity().runOnUiThread {
                     if (_root == null) return@runOnUiThread
                     Toast.makeText(
                         context,
-                        if (anyOk) R.string.device_cpu_applied else R.string.boost_no_root,
+                        if (ok) R.string.device_cpu_applied else R.string.modules_action_failed,
                         Toast.LENGTH_SHORT
                     ).show()
                     setupCpu(requireView())
                 }
             }
         }
+    }
+
+    private fun setupBattery(view: View) {
+        val info = view.findViewById<TextView>(R.id.battery_info)
+        info.text = getString(R.string.device_battery_loading)
+        SysRepo.battery { b ->
+            requireActivity().runOnUiThread {
+                if (_root == null) return@runOnUiThread
+                info.text =
+                    if (b == null) getString(R.string.device_cpu_error, "bateria indisponível")
+                    else getString(
+                        R.string.device_battery_line,
+                        b.level, b.charging, b.health, b.tempC, b.voltageMV
+                    )
+            }
+        }
+    }
+
+    private fun setupDensity(view: View) {
+        val current = view.findViewById<TextView>(R.id.density_current)
+        val valueField = view.findViewById<EditText>(R.id.density_value)
+        val applyBtn = view.findViewById<Button>(R.id.density_apply)
+        val resetBtn = view.findViewById<Button>(R.id.density_reset)
+
+        current.text = getString(R.string.device_density_loading)
+        applyBtn.isEnabled = false
+        resetBtn.isEnabled = false
+
+        val load = {
+            SysRepo.densityCurrent { value, error ->
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    if (value != null) {
+                        current.text = getString(R.string.device_density_current, value)
+                        applyBtn.isEnabled = true
+                        resetBtn.isEnabled = true
+                    } else {
+                        current.text = getString(R.string.device_cpu_error, error ?: "?")
+                    }
+                }
+            }
+        }
+
+        if (!EtApp.rootAvailable) {
+            EtApp.requestRoot { granted ->
+                if (granted && _root != null) load()
+            }
+        } else load()
+
+        applyBtn.setOnClickListener {
+            val v = valueField.text.toString().trim().toIntOrNull()
+            if (v == null || v < 200 || v > 1000) {
+                Toast.makeText(context, R.string.device_density_invalid, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            SysRepo.densitySet(v) { ok ->
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    Toast.makeText(
+                        context,
+                        if (ok) R.string.device_density_done else R.string.modules_action_failed,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    load()
+                }
+            }
+        }
+
+        resetBtn.setOnClickListener {
+            SysRepo.densityReset { ok ->
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    Toast.makeText(
+                        context,
+                        if (ok) R.string.device_density_reset_done else R.string.modules_action_failed,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    load()
+                }
+            }
+        }
+    }
+
+    private fun setupReboot(view: View) {
+        val normal = view.findViewById<Button>(R.id.btn_reboot_normal)
+        val recovery = view.findViewById<Button>(R.id.btn_reboot_recovery)
+        val bootloader = view.findViewById<Button>(R.id.btn_reboot_bootloader)
+
+        val confirm: (String, Int) -> Unit = { mode, titleRes ->
+            AlertDialog.Builder(requireContext())
+                .setTitle(titleRes)
+                .setMessage(R.string.device_reboot_confirm_body)
+                .setPositiveButton(android.R.string.yes) { _, _ ->
+                    SysRepo.reboot(mode) { }
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
+
+        normal.setOnClickListener { confirm("normal", R.string.device_reboot_normal_title) }
+        recovery.setOnClickListener { confirm("recovery", R.string.device_reboot_recovery_title) }
+        bootloader.setOnClickListener { confirm("bootloader", R.string.device_reboot_bootloader_title) }
     }
 
     private fun setupSpoof(view: View) {
@@ -128,8 +246,11 @@ class DeviceFragment : Fragment() {
 
         EtApp.requestRoot { granted ->
             if (_root == null) return@requestRoot
-            applyBtn.isEnabled = granted
-            restoreBtn.isEnabled = granted
+            requireActivity().runOnUiThread {
+                if (_root == null) return@runOnUiThread
+                applyBtn.isEnabled = granted
+                restoreBtn.isEnabled = granted
+            }
         }
 
         applyBtn.setOnClickListener {
@@ -137,45 +258,49 @@ class DeviceFragment : Fragment() {
             val brand = brandField.text.toString().trim()
             if (model.isBlank() && brand.isBlank()) return@setOnClickListener
 
-            thread {
+            Thread {
                 backupOriginals()
-                if (model.isNotBlank()) Su.setProp("ro.product.model", model)
+                if (model.isNotBlank()) Root.ok("setprop ro.product.model \"$model\"")
                 if (brand.isNotBlank()) {
-                    Su.setProp("ro.product.brand", brand)
-                    Su.setProp("ro.product.manufacturer", brand)
+                    Root.ok("setprop ro.product.brand \"$brand\"")
+                    Root.ok("setprop ro.product.manufacturer \"$brand\"")
                 }
-                toastMain(R.string.device_spoof_applied)
-            }
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    Toast.makeText(context, R.string.device_spoof_applied, Toast.LENGTH_LONG).show()
+                }
+            }.start()
         }
 
         restoreBtn.setOnClickListener {
-            thread {
-                val model = Su.read("/data/local/tmp/ettoolbox_orig_model").trim()
-                val brand = Su.read("/data/local/tmp/ettoolbox_orig_brand").trim()
-                if (model.isNotBlank()) Su.setProp("ro.product.model", model)
+            Thread {
+                val model = Root.cmd("cat /data/local/tmp/ettoolbox_orig_model 2>/dev/null").trim()
+                val brand = Root.cmd("cat /data/local/tmp/ettoolbox_orig_brand 2>/dev/null").trim()
+                if (model.isNotBlank()) Root.ok("setprop ro.product.model \"$model\"")
                 if (brand.isNotBlank()) {
-                    Su.setProp("ro.product.brand", brand)
-                    Su.setProp("ro.product.manufacturer", brand)
+                    Root.ok("setprop ro.product.brand \"$brand\"")
+                    Root.ok("setprop ro.product.manufacturer \"$brand\"")
                 }
-                toastMain(R.string.device_spoof_restored)
-            }
+                requireActivity().runOnUiThread {
+                    if (_root == null) return@runOnUiThread
+                    Toast.makeText(context, R.string.device_spoof_restored, Toast.LENGTH_LONG).show()
+                }
+            }.start()
         }
     }
 
     private fun backupOriginals() {
-        val origModel = Su.prop("ro.product.model")
-        val origBrand = Su.prop("ro.product.brand")
-        if (!Su.exists("/data/local/tmp/ettoolbox_orig_model") && origModel.isNotBlank()) {
-            Su.write("/data/local/tmp/ettoolbox_orig_model", origModel)
+        val origModel = Root.cmd("getprop ro.product.model").trim()
+        val origBrand = Root.cmd("getprop ro.product.brand").trim()
+        if (!Root.cmd("test -e /data/local/tmp/ettoolbox_orig_model && echo y").contains("y")
+            && origModel.isNotBlank()
+        ) {
+            Root.ok("echo '$origModel' > /data/local/tmp/ettoolbox_orig_model")
         }
-        if (!Su.exists("/data/local/tmp/ettoolbox_orig_brand") && origBrand.isNotBlank()) {
-            Su.write("/data/local/tmp/ettoolbox_orig_brand", origBrand)
-        }
-    }
-
-    private fun toastMain(resId: Int) {
-        requireActivity().runOnUiThread {
-            if (_root != null) Toast.makeText(context, resId, Toast.LENGTH_LONG).show()
+        if (!Root.cmd("test -e /data/local/tmp/ettoolbox_orig_brand && echo y").contains("y")
+            && origBrand.isNotBlank()
+        ) {
+            Root.ok("echo '$origBrand' > /data/local/tmp/ettoolbox_orig_brand")
         }
     }
 

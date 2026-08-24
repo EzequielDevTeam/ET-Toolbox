@@ -13,6 +13,8 @@ import technology.ezequieldevteam.ettoolbox.ui.clean.CleanFragment
 import technology.ezequieldevteam.ettoolbox.ui.device.DeviceFragment
 import technology.ezequieldevteam.ettoolbox.ui.modules.ModulesFragment
 import technology.ezequieldevteam.ettoolbox.ui.troll.TrollFragment
+import technology.ezequieldevteam.ettoolbox.update.ApkInstaller
+import technology.ezequieldevteam.ettoolbox.update.UpdateChecker
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,8 +54,26 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        binding.topToolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_credits -> {
+                    CreditsDialog.show(this)
+                    true
+                }
+                R.id.action_update -> {
+                    checkUpdate(manual = true)
+                    true
+                }
+                else -> false
+            }
+        }
+
         binding.btnGrantRoot.setOnClickListener {
             EtApp.requestRoot()
+        }
+
+        if (savedInstanceState == null) {
+            checkUpdate(manual = false)
         }
     }
 
@@ -66,6 +86,47 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         EtApp.removeRootListener(rootListener)
+    }
+
+    fun checkUpdate(manual: Boolean) {
+        Toast.makeText(this, R.string.update_checking, Toast.LENGTH_SHORT).show()
+        UpdateChecker.check { release, error ->
+            if (isFinishing || isDestroyed) return@check
+            if (release != null && UpdateChecker.isNewer(release.tag)) {
+                askInstall(release)
+            } else if (release != null) {
+                if (manual) toast(R.string.update_up_to_date)
+            } else if (manual) {
+                Toast.makeText(this, error ?: "", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun askInstall(release: UpdateChecker.Release) {
+        val notes = release.notes.take(600)
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.update_found_title, release.tag))
+            .setMessage(
+                getString(R.string.update_found_body) +
+                    (if (notes.isNotBlank()) "\n\n$notes" else "")
+            )
+            .setPositiveButton(R.string.update_download) { _, _ ->
+                ApkInstaller.downloadAndInstall(this, release.tag, release.apkUrl)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    fun onInstallDownloadFailed() {
+        toast(R.string.update_download_failed)
+    }
+
+    fun onInstallOpenFailed() {
+        toast(R.string.update_install_failed)
+    }
+
+    private fun toast(resId: Int) {
+        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show()
     }
 
     private fun show(fragment: Fragment) {

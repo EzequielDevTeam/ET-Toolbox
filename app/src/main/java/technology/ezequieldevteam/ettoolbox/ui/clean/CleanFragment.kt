@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
-import technology.ezequieldevteam.ettoolbox.data.BloatCatalog
-import technology.ezequieldevteam.ettoolbox.root.Su
-import kotlin.concurrent.thread
+import technology.ezequieldevteam.ettoolbox.core.data.BloatCatalog
+import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
+import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
 
 class CleanFragment : Fragment() {
 
@@ -29,6 +29,17 @@ class CleanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<Button>(R.id.btn_clean_cache).setOnClickListener { cleanCache() }
         setupBloatList(view)
+        loadStorage(view)
+    }
+
+    private fun loadStorage(view: View) {
+        val storageView = view.findViewById<TextView>(R.id.storage_free)
+        SysRepo.storageFree { line ->
+            requireActivity().runOnUiThread {
+                if (_root == null) return@runOnUiThread
+                if (line.isNotBlank()) storageView.text = line
+            }
+        }
     }
 
     private fun cleanCache() {
@@ -36,24 +47,33 @@ class CleanFragment : Fragment() {
         val btn = view.findViewById<Button>(R.id.btn_clean_cache)
         val status = view.findViewById<TextView>(R.id.clean_status)
         btn.isEnabled = false
-        status.text = "Limpando..."
+        status.text = getString(R.string.clean_working)
+
         EtApp.requestRoot { granted ->
             if (_root == null) return@requestRoot
             if (!granted) {
-                Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
-                btn.isEnabled = true
-                status.text = ""
-                return@requestRoot
-            }
-            thread {
-                Su.ok("pm trim-caches 999999999999")
-                val freed = Su.cmd("df -h /data | tail -1 | awk '{print $4}'")
                 requireActivity().runOnUiThread {
                     if (_root == null) return@runOnUiThread
+                    Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_LONG).show()
                     btn.isEnabled = true
-                    status.text = getString(R.string.clean_cache_done, if (freed.isBlank()) "ok" else freed)
+                    status.text = ""
                 }
+                return@requestRoot
             }
+            Thread {
+                Root.ok("pm trim-caches 999999999999")
+                SysRepo.storageFree { freed ->
+                    requireActivity().runOnUiThread {
+                        if (_root == null) return@runOnUiThread
+                        btn.isEnabled = true
+                        status.text = getString(
+                            R.string.clean_cache_done,
+                            if (freed.isBlank()) "ok" else freed
+                        )
+                        loadStorage(requireView())
+                    }
+                }
+            }.start()
         }
     }
 
@@ -63,33 +83,37 @@ class CleanFragment : Fragment() {
 
         EtApp.requestRoot { granted ->
             if (_root == null) return@requestRoot
-            thread {
-                val installedPkgs = if (granted) Su.cmd("pm list packages") else ""
+            Thread {
+                val installedPkgs =
+                    if (granted) Root.cmd("pm list packages") else ""
                 val data = BloatCatalog.all.map {
                     it to installedPkgs.contains("package:${it.packageName}")
                 }
                 requireActivity().runOnUiThread {
                     if (_root == null) return@runOnUiThread
                     recycler.adapter = BloatAdapter(data) { item, wasDisabled ->
-                        thread {
+                        Thread {
                             if (wasDisabled) {
-                                Su.ok("pm enable ${item.packageName}")
+                                Root.ok("pm enable ${item.packageName}")
                             } else {
-                                Su.ok("pm disable-user --user 0 ${item.packageName}")
+                                Root.ok("pm disable-user --user 0 ${item.packageName}")
                             }
                             requireActivity().runOnUiThread {
                                 (recycler.adapter as? BloatAdapter)?.notifyDataSetChanged()
                             }
-                        }
+                        }.start()
                     }
                 }
-            }
+            }.start()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        view?.let { setupBloatList(it) }
+        _root?.let {
+            setupBloatList(it)
+            loadStorage(it)
+        }
     }
 
     override fun onDestroyView() {

@@ -7,7 +7,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import technology.ezequieldevteam.ettoolbox.R
-import technology.ezequieldevteam.ettoolbox.data.BloatItem
+import technology.ezequieldevteam.ettoolbox.core.model.BloatItem
+import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 
 class BloatAdapter(
     private val items: List<Pair<BloatItem, Boolean>>,
@@ -37,13 +38,13 @@ class BloatAdapter(
         holder.desc.text = item.description
 
         if (!installed) {
-            holder.state.text = "nao instalado"
+            holder.state.text = holder.itemView.context.getString(R.string.clean_not_installed)
             holder.btn.isEnabled = false
             holder.btn.text = "-"
             return
         }
 
-        val disabled = isDisabled(item.packageName)
+        val disabled = Root.cmd("pm list packages -d").contains(item.packageName)
         holder.state.text =
             if (disabled) holder.itemView.context.getString(R.string.clean_disabled) else ""
         holder.btn.text =
@@ -52,9 +53,4 @@ class BloatAdapter(
 
         holder.btn.setOnClickListener { onToggle(item, disabled) }
     }
-
-    private fun isDisabled(pkg: String): Boolean =
-        technology.ezequieldevteam.ettoolbox.root.Su.cmd("pm list packages -d").contains(pkg)
-
-    fun refreshAt(position: Int) = notifyItemChanged(position)
 }

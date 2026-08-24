@@ -77,4 +77,66 @@
     <string name="device_line_root">Root: %1$s</string>
 
     <string name="soon">Em construção</string>
+
+    <string name="menu_credits">Créditos</string>
+    <string name="menu_check_update">Verificar atualizações</string>
+    <string name="credits_title">Créditos do ET Toolbox</string>
+    <string name="credits_body">Desenvolvido por EzequielDevTeam.\n\nAgradecimentos especiais:\n• topjohnwu — Magisk e libsu\n• Equipe Material Design — componentes visuais\n• Comunidades open source (LSPosed, KernelSU, MRepo) — referências técnicas\n\nFeito com carinho para a comunidade Android brasileira.</string>
+
+    <string name="update_checking">Verificando atualizações…</string>
+    <string name="update_up_to_date">Você já está na versão mais recente.</string>
+    <string name="update_found_title">Nova versão: %1$s</string>
+    <string name="update_found_body">Uma nova versão está disponível. Deseja baixar e instalar agora?</string>
+    <string name="update_download">Baixar e instalar</string>
+    <string name="update_download_failed">O download falhou. Tente novamente ou baixe direto do GitHub.</string>
+    <string name="update_install_failed">Não foi possível abrir o instalador. Verifique permissão de instalar apps.</string>
+
+    <string name="modules_search_hint">Buscar módulo…</string>
+    <string name="modules_need_root">Conceda root para listar os módulos.</string>
+    <string name="modules_count">%1$d módulos encontrados</string>
+    <string name="modules_state_del">Remoção pendente</string>
+    <string name="modules_error_prefix">Erro ao listar módulos: %1$s</string>
+    <string name="modules_action_failed">Falha na operação root.</string>
+    <string name="modules_remove_confirm_title">Remover módulo?</string>
+    <string name="modules_remove_confirm_body">%1$s será desinstalado no próximo reboot.</string>
+
+    <string name="device_cpu_error">CPU indisponível: %1$s</string>
+    <string name="device_cpu_minmax">Limites: %1$d – %2$d MHz</string>
+
+    <string name="device_battery_title">Bateria</string>
+    <string name="device_battery_loading">Lendo bateria…</string>
+    <string name="device_battery_line">Nível: %1$d%% (%2$s)\nSaúde: %3$s | Temperatura: %4$.1f °C | Tensão: %5$d mV</string>
+
+    <string name="device_density_title">Densidade da tela</string>
+    <string name="device_density_loading">Lendo densidade…</string>
+    <string name="device_density_current">Densidade atual: %1$d dpi</string>
+    <string name="device_density_hint">Nova densidade (ex.: 440)</string>
+    <string name="device_density_apply">Aplicar</string>
+    <string name="device_density_reset">Restaurar padrão</string>
+    <string name="device_density_invalid">Digite um valor entre 200 e 1000.</string>
+    <string name="device_density_done">Densidade aplicada!</string>
+    <string name="device_density_reset_done">Densidade restaurada ao padrão.</string>
+
+    <string name="device_reboot_title">Reiniciar aparelho</string>
+    <string name="device_reboot_warning">Confirme antes: o aparelho reinicia imediatamente.</string>
+    <string name="device_reboot_normal">Normal</string>
+    <string name="device_reboot_recovery">Recovery</string>
+    <string name="device_reboot_bootloader">Bootloader</string>
+    <string name="device_reboot_normal_title">Reiniciar agora?</string>
+    <string name="device_reboot_recovery_title">Reiniciar em modo recovery?</string>
+    <string name="device_reboot_bootloader_title">Reiniciar em modo bootloader?</string>
+    <string name="device_reboot_confirm_body">O aparelho vai reiniciar imediatamente. Continuar?</string>
+
+    <string name="boost_anim_title">Animações do sistema</string>
+    <string name="boost_anim_loading">Lendo animações…</string>
+    <string name="boost_anim_current">Velocidade atual: %1$s</string>
+    <string name="boost_anim_off">Off</string>
+    <string name="boost_anim_fast">0.5x</string>
+    <string name="boost_anim_normal">1x</string>
+    <string name="boost_anim_done">Animações alteradas!</string>
+    <string name="boost_fstrim">Executar FSTRIM agora</string>
+    <string name="boost_fstrim_done">FSTRIM: %1$s</string>
+
+    <string name="clean_working">Limpando…</string>
+    <string name="clean_not_installed">não instalado</string>
 </resources>

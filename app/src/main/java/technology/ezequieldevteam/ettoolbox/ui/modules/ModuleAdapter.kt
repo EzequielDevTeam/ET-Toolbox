@@ -7,20 +7,18 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import technology.ezequieldevteam.ettoolbox.R
+import technology.ezequieldevteam.ettoolbox.core.model.MagiskRow
 
 class ModuleAdapter(
-    private val modules: List<MagiskModule>,
-    private val onToggle: (MagiskModule) -> Unit,
-    private val onRemove: (MagiskModule) -> Unit
+    private var items: List<MagiskRow>,
+    private val onToggle: (MagiskRow) -> Unit,
+    private val onRemove: (MagiskRow) -> Unit
 ) : RecyclerView.Adapter<ModuleAdapter.Holder>() {
 
-    data class MagiskModule(
-        val dirName: String,
-        val name: String,
-        val version: String,
-        val enabled: Boolean,
-        val markedRemove: Boolean
-    )
+    fun replace(newItems: List<MagiskRow>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.module_name)
@@ -35,16 +33,17 @@ class ModuleAdapter(
         return Holder(v)
     }
 
-    override fun getItemCount() = modules.size
+    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val m = modules[position]
-        holder.name.text = m.name.ifBlank { m.dirName }
+        val m = items[position]
+        holder.name.text = m.name.ifBlank { m.id }
         holder.version.text = m.version
-        holder.state.text =
-            if (m.markedRemove) "remocao pendente"
-            else if (m.enabled) holder.itemView.context.getString(R.string.modules_state_on)
-            else holder.itemView.context.getString(R.string.modules_state_off)
+        holder.state.text = when {
+            m.markedRemove -> holder.itemView.context.getString(R.string.modules_state_del)
+            m.enabled -> holder.itemView.context.getString(R.string.modules_state_on)
+            else -> holder.itemView.context.getString(R.string.modules_state_off)
+        }
 
         holder.btnToggle.setOnClickListener { onToggle(m) }
         holder.btnRemove.setOnClickListener { onRemove(m) }

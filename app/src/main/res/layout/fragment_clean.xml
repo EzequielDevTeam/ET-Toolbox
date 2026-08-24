@@ -18,6 +18,13 @@
         android:layout_marginTop="8dp" />
 
     <TextView
+        android:id="@+id/storage_free"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
