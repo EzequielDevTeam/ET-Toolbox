@@ -64,7 +64,7 @@ class EtApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Root.runner = LibsuRunner()
+        Root.runner = LibsurootRunner()
         DynamicColors.applyToActivitiesIfAvailable(this)
         requestRoot()
     }
