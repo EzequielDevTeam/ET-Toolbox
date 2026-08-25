@@ -11,13 +11,26 @@ android {
         applicationId = "technology.ezequieldevteam.ettoolbox"
         minSdk = 29
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.4.1"
+        versionCode = 6
+        versionName = "0.4.2"
+    }
+
+    signingConfigs {
+        create("ett") {
+            storeFile = rootProject.file("ci/signing/ettbox.jks")
+            storePassword = "ettbox2026"
+            keyAlias = "ettoolbox"
+            keyPassword = "ettbox2026"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("ett")
+        }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("ett")
         }
     }
     compileOptions {

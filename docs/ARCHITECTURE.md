@@ -58,3 +58,17 @@ Callbacks chegam na thread do shell; a camada `app` faz `runOnUiThread`.
 
 `.github/workflows/build.yml`: JDK 17 → `./gradlew :app:assembleDebug --no-daemon`,
 publicando o APK como artifact `ETToolbox-debug`.
+
+## Assinatura (chave fixa)
+
+`ci/signing/ettbox.jks` é a chave permanente do app (alias `ettoolbox`). Toda build
+— debug e release — assina com ela, então **qualquer versão nova instala por cima
+da antiga sem desinstalar**. Para publicar uma release: bump de `versionCode`/
+`versionName`, commit, e:
+
+```sh
+git tag v0.5.0 && git push origin v0.5.0
+```
+
+O workflow `release.yml` compila o APK assinado e publica a release no GitHub
+automaticamente.
