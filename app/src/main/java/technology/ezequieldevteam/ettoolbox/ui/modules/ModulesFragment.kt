@@ -160,11 +160,8 @@ class ModulesFragment : Fragment() {
     }
 
     private fun fetchModuleUpdate(moduleId: String, currentVersion: String): ModuleUpdateInfo? {
-            // For now, just return null - this would need a proper module repository index
-            null
-        } catch (e: Exception) {
-            null
-        }
+        // For now, just return null - this would need a proper module repository index
+        return null
     }
 
     private fun updateModule(module: MagiskRow) {
