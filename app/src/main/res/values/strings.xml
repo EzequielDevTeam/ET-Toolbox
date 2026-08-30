@@ -83,8 +83,8 @@
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="app_action_failed">Ação falhou (precisa root?)</string>
-    <string name="app_enabled">App %1$s habilitado</string>
-    <string name="app_disabled">App %1$s desativado</string>
+    <string name="app_enabled_toast">App %1$s habilitado</string>
+    <string name="app_disabled_toast">App %1$s desativado</string>
     <string name="app_none_selected">Nenhum app habilitado selecionado</string>
     <string name="app_none_disabled">Nenhum app desativado selecionado</string>
     <string name="app_batch_done">%1$d apps processados</string>

@@ -113,7 +113,7 @@ class AppManagerFragment : Fragment() {
                             filteredApps[idx] = app.copy(enabled = newState)
                             adapter.notifyItemChanged(idx)
                         }
-                        Toast.makeText(context, getString(if (newState) R.string.app_enabled else R.string.app_disabled, app.label), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, getString(if (newState) R.string.app_enabled_toast else R.string.app_disabled_toast, app.label), Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, R.string.app_action_failed, Toast.LENGTH_SHORT).show()
                     }
