@@ -17,10 +17,10 @@ android {
 
     signingConfigs {
         create("ett") {
-            storeFile = System.getenv("SIGNING_STORE_FILE")?.let { rootProject.file(it) } ?: rootProject.file("ci/signing/ettbox.jks")
-            storePassword = System.getenv("SIGNING_STORE_PASSWORD") ?: "ettbox2026"
-            keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: "ettoolbox"
-            keyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: "ettbox2026"
+            storeFile = rootProject.file("ci/signing/ettbox.jks")
+            storePassword = "ettbox2026"
+            keyAlias = "ettoolbox"
+            keyPassword = "ettbox2026"
         }
     }
 
