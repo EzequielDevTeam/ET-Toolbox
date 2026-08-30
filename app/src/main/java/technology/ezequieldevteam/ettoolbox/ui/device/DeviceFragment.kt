@@ -173,7 +173,7 @@ class DeviceFragment : Fragment() {
                     val b = readBatteryNoRoot()
                     ui {
                         refreshBtn.isEnabled = true
-                        healthView.text = if (b == null) getString(R.string.battery_health_unavailable) else formatHealthInfo(b, null, null, null, null)
+                        healthView.text = if (b == null) getString(R.string.battery_health_unavailable) else formatHealthInfo(b, null, null, null, null, null)
                     }
                     return@requestRoot
                 }
@@ -209,7 +209,7 @@ class DeviceFragment : Fragment() {
             }
             if (lines.size >= 5) {
                 temp = lines[2].trim().toLongOrNull()?.let { it / 10.0 }
-                volt = lines[3].trim().toLongOrNull()?.let { it / 1000 }
+                volt = lines[3].trim().toLongOrNull()?.let { (it / 1000).toInt() }
                 status = lines[4].trim()
             }
         } catch (_: Exception) {}

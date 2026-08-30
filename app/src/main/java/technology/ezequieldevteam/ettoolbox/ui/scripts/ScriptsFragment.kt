@@ -77,8 +77,9 @@ class ScriptsFragment : Fragment() {
         val contentField = view.findViewById<EditText>(R.id.script_content)
 
         if (isEdit) {
-            nameField.setText(script.name)
-            contentField.setText(script.content)
+            val s = script!!
+            nameField.setText(s.name)
+            contentField.setText(s.content)
         }
 
         androidx.appcompat.app.AlertDialog.Builder(requireContext())

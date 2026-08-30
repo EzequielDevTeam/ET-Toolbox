@@ -11,8 +11,8 @@ import technology.ezequieldevteam.ettoolbox.core.model.BloatItem
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 
 class BloatAdapter(
-    private val items: List<Pair<BloatItem, Boolean>>,
-    private val onToggle: (BloatItem, Boolean) -> Unit
+    val items: List<Pair<BloatItem, Boolean>>,
+    val onToggle: (BloatItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<BloatAdapter.Holder>() {
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
