@@ -196,10 +196,9 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_governor"
-                        android:layout_width="100dp"
                         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                     <Spinner
@@ -217,10 +216,9 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_animations"
-                        android:layout_width="100dp"
                         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                     <Spinner
