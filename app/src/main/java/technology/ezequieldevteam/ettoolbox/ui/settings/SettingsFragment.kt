@@ -93,8 +93,8 @@ class SettingsFragment : Fragment() {
         }
         val json = StringBuilder("[\n")
         for (i in 0 until count) {
-            val name = scriptPrefs.getString("script_name_$i", "")
-            val content = scriptPrefs.getString("script_content_$i", "")
+            val name = scriptPrefs.getString("script_name_$i", "") ?: ""
+            val content = scriptPrefs.getString("script_content_$i", "") ?: ""
             if (name.isNotBlank()) {
                 json.append("  {\"name\": \"").append(name.replace("\"", "\\\"")).append("\", \"content\": \"")
                     .append(content.replace("\"", "\\\"").replace("\n", "\\n")).append("\"},\n")
@@ -109,7 +109,7 @@ class SettingsFragment : Fragment() {
             file?.writeText(json.toString())
             Toast.makeText(context, getString(R.string.settings_exported, file?.absolutePath), Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            Toast.makeText(context, getString(R.string.settings_export_fail, e.message), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.settings_export_fail, e.message ?: "unknown error"), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -28,7 +28,7 @@ import technology.ezequieldevteam.ettoolbox.update.UpdateChecker
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    internal lateinit var binding: ActivityMainBinding
     private var wasRooted = false
     private var currentNavItemId = R.id.nav_boost
 
