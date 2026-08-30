@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.core.data.BloatCatalog
-import technology.ezequieldevteam.ettoolbox.core.data.BloatItem
+import technology.ezequieldevteam.ettoolbox.core.model.BloatItem
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
 import java.text.SimpleDateFormat
@@ -194,7 +194,7 @@ class CleanFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.clean_smart_disable_title)
             .setMessage(getString(R.string.clean_smart_disable_body, toDisable.size))
-            .setPositiveButton(R.string.disable) { _, _ ->
+            .setPositiveButton(R.string.clean_disable) { _, _ ->
                 EtApp.requestRoot { granted ->
                     if (!granted) {
                         Toast.makeText(context, R.string.boost_no_root, Toast.LENGTH_SHORT).show()

@@ -236,11 +236,6 @@ class DeviceFragment : Fragment() {
         status?.let { sb.appendLine(getString(R.string.battery_health_status, it)) }
         return if (sb.isNotEmpty()) sb.toString() else getString(R.string.battery_health_unavailable)
     }
-            sb.appendLine(getString(R.string.battery_health_voltage, v))
-        }
-        status?.let { sb.appendLine(getString(R.string.battery_health_status, it)) }
-        return if (sb.isNotEmpty()) sb.toString() else getString(R.string.battery_health_unavailable)
-    }
 
     private fun readBatteryNoRoot(): BatteryInfo? {
         return try {

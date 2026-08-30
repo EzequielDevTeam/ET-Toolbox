@@ -29,7 +29,7 @@ class AppManagerFragment : Fragment() {
 
     private var _root: View? = null
     private var allApps: List<AppInfo> = emptyList()
-    private var filteredApps: List<AppInfo> = emptyList()
+    private var filteredApps: MutableList<AppInfo> = mutableListOf()
     private lateinit var adapter: AppAdapter
     private var showSystem = false
     private var showEnabledOnly = true
