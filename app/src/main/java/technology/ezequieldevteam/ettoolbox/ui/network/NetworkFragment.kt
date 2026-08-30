@@ -166,7 +166,7 @@ class NetworkFragment : Fragment() {
             }
             btn.isEnabled = false
             thread {
-                val cmds = dns.split(" ").map { "setprop net.dns${it.index + 1} ${it.value}" }
+                val cmds = dns.split(" ").mapIndexed { index, value -> "setprop net.dns${index + 1} $value" }
                 val script = cmds.joinToString("; ")
                 val (ok, out) = Root.runner.run(script)
                 ui {

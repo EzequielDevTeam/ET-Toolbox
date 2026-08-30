@@ -284,9 +284,9 @@ class CleanFragment : Fragment() {
 
 // Combined adapter for catalog + smart scanner
 class CombinedBloatAdapter(
-    private val catalogData: List<Pair<technology.ezequieldevteam.ettoolbox.core.data.BloatItem, Boolean>>,
+    private val catalogData: List<Pair<technology.ezequieldevteam.ettoolbox.core.model.BloatItem, Boolean>>,
     private val smartData: List<Pair<CleanFragment.SmartBloatItem, Boolean>>,
-    private val onToggle: (technology.ezequieldevteam.ettoolbox.core.data.BloatItem, Boolean) -> Unit
+    private val onToggle: (technology.ezequieldevteam.ettoolbox.core.model.BloatItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -351,7 +351,7 @@ class CombinedBloatAdapter(
         val toggle: Button = view.findViewById(R.id.bloat_toggle)
         val safeBadge: TextView = view.findViewById(R.id.bloat_safe_badge)
 
-        fun bind(item: technology.ezequieldevteam.ettoolbox.core.data.BloatItem, installed: Boolean, onToggle: (technology.ezequieldevteam.ettoolbox.core.data.BloatItem, Boolean) -> Unit) {
+        fun bind(item: technology.ezequieldevteam.ettoolbox.core.model.BloatItem, installed: Boolean, onToggle: (technology.ezequieldevteam.ettoolbox.core.model.BloatItem, Boolean) -> Unit) {
             name.text = item.label
             desc.text = item.description
             status.text = if (installed) view.context.getString(R.string.clean_installed) else view.context.getString(R.string.clean_not_installed)

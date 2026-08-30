@@ -252,11 +252,4 @@ class ModulesFragment : Fragment() {
         super.onDestroyView()
         _root = null
     }
-
-    data class ModuleUpdateInfo(
-        val latestVersion: String,
-        val downloadUrl: String,
-        val changelog: String,
-        val hasUpdate: Boolean
-    )
 }

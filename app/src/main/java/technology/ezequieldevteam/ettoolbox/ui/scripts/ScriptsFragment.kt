@@ -53,8 +53,8 @@ class ScriptsFragment : Fragment() {
         val count = saved.getInt("count", 0)
         scripts.clear()
         for (i in 0 until count) {
-            val name = saved.getString("script_name_$i", "")
-            val content = saved.getString("script_content_$i", "")
+            val name = saved.getString("script_name_$i", "") ?: ""
+            val content = saved.getString("script_content_$i", "") ?: ""
             if (name.isNotBlank()) scripts.add(ScriptItem(name, content))
         }
         adapter.notifyDataSetChanged()
@@ -84,7 +84,7 @@ class ScriptsFragment : Fragment() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle(if (isEdit) R.string.script_edit_title else R.string.script_add_title)
             .setView(view)
-            .setPositiveButton(if (isEdit) R.string.save else R.string.add) { _, _ ->
+            .setPositiveButton(if (isEdit) R.string.save else R.string.script_add) { _, _ ->
                 val name = nameField.text.toString().trim()
                 val content = contentField.text.toString().trim()
                 if (name.isBlank() || content.isBlank()) {

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import technology.ezequieldevteam.ettoolbox.BuildConfig
 import technology.ezequieldevteam.ettoolbox.EtApp
+import technology.ezequieldevteam.ettoolbox.MainActivity
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.update.UpdateChecker
 
@@ -36,7 +37,6 @@ class SettingsFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("et_settings", 0)
 
         val autoUpdate = view.findViewById<Switch>(R.id.sw_auto_update)
-        val autoUpdateInterval = view.findViewById<Switch>(R.id.sw_auto_update_interval)
         val showRootBanner = view.findViewById<Switch>(R.id.sw_show_root_banner)
         val vibrateOnActions = view.findViewById<Switch>(R.id.sw_vibrate)
 

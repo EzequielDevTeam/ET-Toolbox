@@ -80,7 +80,6 @@ class LogsFragment : Fragment() {
             ui {
                 btn.isEnabled = true
                 logView.text = if (output.isNotEmpty()) output.toString() else getString(R.string.logs_empty)
-                logView.setSelection(logView.text.length)
             }
         }
     }
