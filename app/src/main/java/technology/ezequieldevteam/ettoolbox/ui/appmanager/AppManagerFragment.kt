@@ -239,8 +239,9 @@ class AppAdapter(
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val query = constraint?.toString()?.trim()?.lowercase() ?: ""
             val results = FilterResults()
-            results.values = if (query.isBlank()) allApps else allApps.filter { it.label.lowercase().contains(query) || it.packageName.lowercase().contains(query) }
-            results.count = results.values.size
+            val filtered = if (query.isBlank()) allApps else allApps.filter { it.label.lowercase().contains(query) || it.packageName.lowercase().contains(query) }
+            results.values = filtered
+            results.count = filtered.size
             return results
         }
 

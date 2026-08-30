@@ -174,7 +174,7 @@ class BoostFragment : Fragment() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val name = parent.getItemAtPosition(position) as? String
+                val name = parent?.getItemAtPosition(position) as? String
                 if (name != null && name != getString(R.string.profile_new)) {
                     loadProfile(name)
                     btnApply.isEnabled = true
@@ -199,7 +199,7 @@ class BoostFragment : Fragment() {
         val names = mutableListOf<String>()
         names.add(getString(R.string.profile_new)) // "Novo perfil"
         for (i in 0 until count) {
-            val name = prefs.getString("profile_name_$i", "")
+            val name = prefs.getString("profile_name_$i", "") ?: ""
             if (name.isNotBlank()) names.add(name)
         }
         spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, names)
@@ -209,9 +209,9 @@ class BoostFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("et_profiles", 0)
         val count = prefs.getInt("profile_count", 0)
         for (i in 0 until count) {
-            if (prefs.getString("profile_name_$i", "") == name) {
-                val governor = prefs.getString("profile_gov_$i", "performance")
-                val animScale = prefs.getString("profile_anim_$i", "0.5")
+            if ((prefs.getString("profile_name_$i", "") ?: "") == name) {
+                val governor = prefs.getString("profile_gov_$i", "performance") ?: "performance"
+                val animScale = prefs.getString("profile_anim_$i", "0.5") ?: "0.5"
                 val doRam = prefs.getBoolean("profile_ram_$i", true)
                 val doCache = prefs.getBoolean("profile_cache_$i", true)
                 val doFstrim = prefs.getBoolean("profile_fstrim_$i", false)
@@ -323,7 +323,7 @@ class BoostFragment : Fragment() {
                 val count = prefs.getInt("profile_count", 0)
                 val newList = mutableListOf<String>()
                 for (i in 0 until count) {
-                    val n = prefs.getString("profile_name_$i", "")
+                    val n = prefs.getString("profile_name_$i", "") ?: ""
                     if (n != name && n.isNotBlank()) newList.add(n)
                 }
                 editor.clear()
@@ -331,7 +331,7 @@ class BoostFragment : Fragment() {
                 newList.forEachIndexed { i, n ->
                     editor.putString("profile_name_$i", n)
                     // Copy other fields
-                    val oldIdx = (0 until count).find { prefs.getString("profile_name_$it", "") == n } ?: 0
+                    val oldIdx = (0 until count).find { (prefs.getString("profile_name_$it", "") ?: "") == n } ?: 0
                     editor.putString("profile_gov_$i", prefs.getString("profile_gov_$oldIdx", "performance"))
                     editor.putString("profile_anim_$i", prefs.getString("profile_anim_$oldIdx", "0.5"))
                     editor.putBoolean("profile_ram_$i", prefs.getBoolean("profile_ram_$oldIdx", true))
