@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import androidx.annotation.SuppressLint
 import androidx.core.content.FileProvider
 import technology.ezequieldevteam.ettoolbox.MainActivity
 import java.io.File
