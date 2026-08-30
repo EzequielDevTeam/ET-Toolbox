@@ -100,13 +100,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onNavItemSelected(itemId: Int) {
-        val fragment: Fragment = when (itemId) {
+        val fragment: Fragment? = when (itemId) {
             R.id.nav_boost -> BoostFragment()
             R.id.nav_troll -> TrollFragment()
             R.id.nav_clean -> CleanFragment()
             R.id.nav_modules -> ModulesFragment()
             R.id.nav_device -> DeviceFragment()
-            R.id.nav_more -> binding.drawerLayout.openDrawer(GravityCompat.START).also { return@when }
+            R.id.nav_more -> {
+                binding.drawerLayout.openDrawer(GravityCompat.START)
+                null
+            }
             R.id.nav_scripts -> ScriptsFragment()
             R.id.nav_logs -> LogsFragment()
             R.id.nav_benchmark -> BenchmarkFragment()
@@ -115,13 +118,16 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_settings -> SettingsFragment()
             R.id.nav_about -> {
                 CreditsDialog.show(this)
-                return@when
+                null
             }
             else -> BoostFragment()
         }
-        currentNavItemId = itemId
-        updateBottomNavSelection(itemId)
-        show(fragment)
+        
+        fragment?.let {
+            currentNavItemId = itemId
+            updateBottomNavSelection(itemId)
+            show(it)
+        }
     }
 
     private fun updateBottomNavSelection(itemId: Int) {

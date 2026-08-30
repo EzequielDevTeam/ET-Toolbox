@@ -218,7 +218,7 @@ class AppAdapter(
         val item = items[position]
         holder.name.text = item.label
         holder.packageName.text = item.packageName
-        holder.status.text = if (item.enabled) R.string.app_enabled else R.string.app_disabled
+        holder.status.text = if (item.enabled) holder.itemView.context.getString(R.string.app_enabled) else holder.itemView.context.getString(R.string.app_disabled)
         holder.status.setTextColor(if (item.enabled) holder.itemView.context.getColor(android.R.color.holo_green_dark) else holder.itemView.context.getColor(android.R.color.holo_red_dark))
         holder.toggle.isChecked = item.enabled
         holder.toggle.setOnCheckedChangeListener(null)
