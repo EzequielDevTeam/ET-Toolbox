@@ -344,7 +344,7 @@ class CombinedBloatAdapter(
         val title: TextView = view.findViewById(R.id.bloat_header_title)
     }
 
-    inner class BloatVH(view: View) : RecyclerView.ViewHolder(view) {
+    inner class BloatVH(val view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.bloat_name)
         val desc: TextView = view.findViewById(R.id.bloat_desc)
         val status: TextView = view.findViewById(R.id.bloat_status)
@@ -362,7 +362,7 @@ class CombinedBloatAdapter(
         }
     }
 
-    inner class SmartVH(view: View) : RecyclerView.ViewHolder(view) {
+    inner class SmartVH(val view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.smart_name)
         val desc: TextView = view.findViewById(R.id.smart_desc)
         val lastUsed: TextView = view.findViewById(R.id.smart_last_used)
