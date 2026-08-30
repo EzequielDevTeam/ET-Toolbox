@@ -343,5 +343,4 @@
     <string name="boost_fstrim_done">FSTRIM: %1$s</string>
 
     <string name="clean_working">Limpando…</string>
-    <string name="clean_not_installed">não instalado</string>
 </resources>
