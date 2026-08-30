@@ -264,7 +264,7 @@
     <string name="device_line_android">Android: %1$s (API %2$s)</string>
     <string name="device_line_patch">Patch de segurança: %1$s</string>
     <string name="device_line_soc">SoC: %1$s</string>
-    <string name="device_line_cores">Núcleos CPU: %1$s</string>
+    <string name="device_line_cores">Núcleos CPU: %1$d</string>
     <string name="device_line_ram">RAM total: %1$s MB</string>
     <string name="device_line_kernel">Kernel: %1$s</string>
     <string name="device_line_root">Root: %1$s</string>
