@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.core.data.BloatCatalog
+import technology.ezequieldevteam.ettoolbox.core.data.BloatItem
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
 import technology.ezequieldevteam.ettoolbox.core.repo.SysRepo
 import java.text.SimpleDateFormat

@@ -125,7 +125,7 @@ class AppManagerFragment : Fragment() {
     private fun showAppInfo(app: AppInfo) {
         AlertDialog.Builder(requireContext())
             .setTitle(app.label)
-            .setMessage(getString(R.string.app_info_body, app.packageName, app.path, if (app.isSystem) getString(R.string.yes) else getString(R.string.no), if (app.enabled) getString(R.string.enabled) else R.string.disabled))
+            .setMessage(getString(R.string.app_info_body, app.packageName, app.path, if (app.isSystem) getString(R.string.yes) else getString(R.string.no), if (app.enabled) getString(R.string.app_enabled) else getString(R.string.app_disabled)))
             .setPositiveButton(android.R.string.ok, null)
             .show()
     }
@@ -155,9 +155,9 @@ class AppManagerFragment : Fragment() {
     }
 
     private fun batchEnable() {
-        val selected = filteredApps.filter { !it.enabled }.take(10)
+        val selected = filteredApps.filter { it.enabled }.take(10)
         if (selected.isEmpty()) {
-            Toast.makeText(context, R.string.app_none_disabled, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.app_none_selected, Toast.LENGTH_SHORT).show()
             return
         }
         EtApp.requestRoot { granted ->
@@ -218,7 +218,7 @@ class AppAdapter(
         val item = items[position]
         holder.name.text = item.label
         holder.packageName.text = item.packageName
-        holder.status.text = if (item.enabled) R.string.enabled else R.string.disabled
+        holder.status.text = if (item.enabled) R.string.app_enabled else R.string.app_disabled
         holder.status.setTextColor(if (item.enabled) holder.itemView.context.getColor(android.R.color.holo_green_dark) else holder.itemView.context.getColor(android.R.color.holo_red_dark))
         holder.toggle.isChecked = item.enabled
         holder.toggle.setOnCheckedChangeListener(null)

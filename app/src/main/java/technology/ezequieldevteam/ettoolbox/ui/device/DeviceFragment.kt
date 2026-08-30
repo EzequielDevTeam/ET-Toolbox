@@ -162,9 +162,6 @@ class DeviceFragment : Fragment() {
     private fun setupBatteryHealth(view: View) {
         val healthView = view.findViewById<TextView>(R.id.battery_health)
         val refreshBtn = view.findViewById<Button>(R.id.btn_battery_health_refresh)
-        
-        refreshBtn.setOnClickListener { loadBatteryHealth() }
-        loadBatteryHealth()
 
         fun loadBatteryHealth() {
             refreshBtn.isEnabled = false
@@ -181,21 +178,27 @@ class DeviceFragment : Fragment() {
                     return@requestRoot
                 }
                 thread(name = "et-battery-health") {
-                    val (capacity, cycleCount, temp, voltage, status) = readBatteryHealthRoot()
+                    val (capacity, cycleCount, batteryData) = readBatteryHealthRoot()
+                    val (temp, volt, status) = batteryData
                     ui {
                         refreshBtn.isEnabled = true
                         val b = readBatteryNoRoot()
-                        healthView.text = formatHealthInfo(b, capacity, cycleCount, temp, voltage)
+                        healthView.text = formatHealthInfo(b, capacity, cycleCount, temp, volt, status)
                     }
                 }
             }
         }
+
+        refreshBtn.setOnClickListener { loadBatteryHealth() }
+        loadBatteryHealth()
     }
 
-    private fun readBatteryHealthRoot(): Triple<Int?, Int?, Pair<Double, Int>?> {
+    private fun readBatteryHealthRoot(): Triple<Int?, Int?, Triple<Double?, Int?, String?>> {
         var capacity: Int? = null
         var cycleCount: Int? = null
-        var tempVoltage: Pair<Double, Int>? = null
+        var temp: Double? = null
+        var volt: Int? = null
+        var status: String? = null
         
         try {
             val output = Root.cmd("cat /sys/class/power_supply/battery/capacity_level 2>/dev/null; cat /sys/class/power_supply/battery/cycle_count 2>/dev/null; cat /sys/class/power_supply/battery/temp 2>/dev/null; cat /sys/class/power_supply/battery/voltage_now 2>/dev/null; cat /sys/class/power_supply/battery/status 2>/dev/null")
@@ -204,21 +207,22 @@ class DeviceFragment : Fragment() {
                 cycleCount = lines[0].trim().toIntOrNull()
                 capacity = lines[1].trim().toIntOrNull()
             }
-            if (lines.size >= 4) {
-                val temp = lines[2].trim().toLongOrNull()?.let { it / 10.0 }
-                val volt = lines[3].trim().toLongOrNull()?.let { it / 1000 }
-                if (temp != null && volt != null) tempVoltage = temp to volt
+            if (lines.size >= 5) {
+                temp = lines[2].trim().toLongOrNull()?.let { it / 10.0 }
+                volt = lines[3].trim().toLongOrNull()?.let { it / 1000 }
+                status = lines[4].trim()
             }
         } catch (_: Exception) {}
         
-        return Triple(capacity, cycleCount, tempVoltage)
+        return Triple(capacity, cycleCount, Triple(temp, volt, status))
     }
 
     private fun formatHealthInfo(
         battery: BatteryInfo?,
         capacity: Int?,
         cycleCount: Int?,
-        tempVoltage: Pair<Double, Int>?,
+        temp: Double?,
+        volt: Int?,
         status: String?
     ): String {
         val sb = StringBuilder()
@@ -227,8 +231,11 @@ class DeviceFragment : Fragment() {
         }
         capacity?.let { sb.appendLine(getString(R.string.battery_health_capacity, it)) }
         cycleCount?.let { sb.appendLine(getString(R.string.battery_health_cycles, it)) }
-        tempVoltage?.let { (t, v) ->
-            sb.appendLine(getString(R.string.battery_health_temp, t))
+        temp?.let { sb.appendLine(getString(R.string.battery_health_temp, it)) }
+        volt?.let { sb.appendLine(getString(R.string.battery_health_voltage, it)) }
+        status?.let { sb.appendLine(getString(R.string.battery_health_status, it)) }
+        return if (sb.isNotEmpty()) sb.toString() else getString(R.string.battery_health_unavailable)
+    }
             sb.appendLine(getString(R.string.battery_health_voltage, v))
         }
         status?.let { sb.appendLine(getString(R.string.battery_health_status, it)) }

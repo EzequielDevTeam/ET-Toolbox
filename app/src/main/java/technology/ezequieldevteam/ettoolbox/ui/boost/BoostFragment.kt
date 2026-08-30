@@ -284,7 +284,8 @@ class BoostFragment : Fragment() {
         val doCache = view.findViewById<CheckBox>(R.id.profile_cache).isChecked
         val doFstrim = view.findViewById<CheckBox>(R.id.profile_fstrim).isChecked
 
-        val prefs = requireContext().getSharedPreferences("et_profiles", 0).edit()
+        val prefs = requireContext().getSharedPreferences("et_profiles", 0)
+        val editor = prefs.edit()
         val count = prefs.getInt("profile_count", 0)
 
         // Check if updating existing
@@ -294,14 +295,14 @@ class BoostFragment : Fragment() {
         }
         if (idx == -1) idx = count
 
-        prefs.putString("profile_name_$idx", name)
-        prefs.putString("profile_gov_$idx", gov)
-        prefs.putString("profile_anim_$idx", anim)
-        prefs.putBoolean("profile_ram_$idx", doRam)
-        prefs.putBoolean("profile_cache_$idx", doCache)
-        prefs.putBoolean("profile_fstrim_$idx", doFstrim)
-        if (idx == count) prefs.putInt("profile_count", count + 1)
-        prefs.apply()
+        editor.putString("profile_name_$idx", name)
+        editor.putString("profile_gov_$idx", gov)
+        editor.putString("profile_anim_$idx", anim)
+        editor.putBoolean("profile_ram_$idx", doRam)
+        editor.putBoolean("profile_cache_$idx", doCache)
+        editor.putBoolean("profile_fstrim_$idx", doFstrim)
+        if (idx == count) editor.putInt("profile_count", count + 1)
+        editor.apply()
 
         Toast.makeText(context, R.string.profile_saved, Toast.LENGTH_SHORT).show()
         loadProfiles(view.findViewById(R.id.profile_spinner))
@@ -317,26 +318,27 @@ class BoostFragment : Fragment() {
             .setTitle(R.string.profile_delete_confirm)
             .setMessage(getString(R.string.profile_delete_body, name))
             .setPositiveButton(R.string.delete) { _, _ ->
-                val prefs = requireContext().getSharedPreferences("et_profiles", 0).edit()
+                val prefs = requireContext().getSharedPreferences("et_profiles", 0)
+                val editor = prefs.edit()
                 val count = prefs.getInt("profile_count", 0)
                 val newList = mutableListOf<String>()
                 for (i in 0 until count) {
                     val n = prefs.getString("profile_name_$i", "")
                     if (n != name && n.isNotBlank()) newList.add(n)
                 }
-                prefs.clear()
-                prefs.putInt("profile_count", newList.size)
+                editor.clear()
+                editor.putInt("profile_count", newList.size)
                 newList.forEachIndexed { i, n ->
-                    prefs.putString("profile_name_$i", n)
+                    editor.putString("profile_name_$i", n)
                     // Copy other fields
                     val oldIdx = (0 until count).find { prefs.getString("profile_name_$it", "") == n } ?: 0
-                    prefs.putString("profile_gov_$i", prefs.getString("profile_gov_$oldIdx", "performance"))
-                    prefs.putString("profile_anim_$i", prefs.getString("profile_anim_$oldIdx", "0.5"))
-                    prefs.putBoolean("profile_ram_$i", prefs.getBoolean("profile_ram_$oldIdx", true))
-                    prefs.putBoolean("profile_cache_$i", prefs.getBoolean("profile_cache_$oldIdx", true))
-                    prefs.putBoolean("profile_fstrim_$i", prefs.getBoolean("profile_fstrim_$oldIdx", false))
+                    editor.putString("profile_gov_$i", prefs.getString("profile_gov_$oldIdx", "performance"))
+                    editor.putString("profile_anim_$i", prefs.getString("profile_anim_$oldIdx", "0.5"))
+                    editor.putBoolean("profile_ram_$i", prefs.getBoolean("profile_ram_$oldIdx", true))
+                    editor.putBoolean("profile_cache_$i", prefs.getBoolean("profile_cache_$oldIdx", true))
+                    editor.putBoolean("profile_fstrim_$i", prefs.getBoolean("profile_fstrim_$oldIdx", false))
                 }
-                prefs.apply()
+                editor.apply()
                 Toast.makeText(context, R.string.profile_deleted, Toast.LENGTH_SHORT).show()
                 loadProfiles(spinner)
             }
