@@ -28,8 +28,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          cache-readonly: false
-          arguments: --no-daemon
+          cache-read-only: true
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -50,7 +49,6 @@ jobs:
       - name: Update version in build.gradle.kts
         run: |
           sed -i "s/versionName = \".*\"/versionName = \"${{ steps.version.outputs.version }}\"/" app/build.gradle.kts
-          # Increment versionCode based on timestamp for uniqueness
           VERSION_CODE=$(date +%s)
           sed -i "s/versionCode = .*/versionCode = $VERSION_CODE/" app/build.gradle.kts
 
