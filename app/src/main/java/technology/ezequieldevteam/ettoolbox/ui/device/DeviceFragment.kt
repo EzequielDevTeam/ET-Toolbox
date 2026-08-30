@@ -39,6 +39,7 @@ class DeviceFragment : Fragment() {
         fillDeviceInfo(view)
         setupCpu(view)
         setupBattery(view)
+        setupBatteryHealth(view)
         setupDensity(view)
         setupReboot(view)
         setupSpoof(view)
@@ -156,6 +157,82 @@ class DeviceFragment : Fragment() {
                     )
             }
         }
+    }
+
+    private fun setupBatteryHealth(view: View) {
+        val healthView = view.findViewById<TextView>(R.id.battery_health)
+        val refreshBtn = view.findViewById<Button>(R.id.btn_battery_health_refresh)
+        
+        refreshBtn.setOnClickListener { loadBatteryHealth() }
+        loadBatteryHealth()
+
+        fun loadBatteryHealth() {
+            refreshBtn.isEnabled = false
+            healthView.text = getString(R.string.battery_health_loading)
+
+            EtApp.requestRoot { granted ->
+                if (!granted) {
+                    // Try without root first
+                    val b = readBatteryNoRoot()
+                    ui {
+                        refreshBtn.isEnabled = true
+                        healthView.text = if (b == null) getString(R.string.battery_health_unavailable) else formatHealthInfo(b, null, null, null, null)
+                    }
+                    return@requestRoot
+                }
+                thread(name = "et-battery-health") {
+                    val (capacity, cycleCount, temp, voltage, status) = readBatteryHealthRoot()
+                    ui {
+                        refreshBtn.isEnabled = true
+                        val b = readBatteryNoRoot()
+                        healthView.text = formatHealthInfo(b, capacity, cycleCount, temp, voltage)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun readBatteryHealthRoot(): Triple<Int?, Int?, Pair<Double, Int>?> {
+        var capacity: Int? = null
+        var cycleCount: Int? = null
+        var tempVoltage: Pair<Double, Int>? = null
+        
+        try {
+            val output = Root.cmd("cat /sys/class/power_supply/battery/capacity_level 2>/dev/null; cat /sys/class/power_supply/battery/cycle_count 2>/dev/null; cat /sys/class/power_supply/battery/temp 2>/dev/null; cat /sys/class/power_supply/battery/voltage_now 2>/dev/null; cat /sys/class/power_supply/battery/status 2>/dev/null")
+            val lines = output.lines().filter { it.isNotBlank() }
+            if (lines.size >= 2) {
+                cycleCount = lines[0].trim().toIntOrNull()
+                capacity = lines[1].trim().toIntOrNull()
+            }
+            if (lines.size >= 4) {
+                val temp = lines[2].trim().toLongOrNull()?.let { it / 10.0 }
+                val volt = lines[3].trim().toLongOrNull()?.let { it / 1000 }
+                if (temp != null && volt != null) tempVoltage = temp to volt
+            }
+        } catch (_: Exception) {}
+        
+        return Triple(capacity, cycleCount, tempVoltage)
+    }
+
+    private fun formatHealthInfo(
+        battery: BatteryInfo?,
+        capacity: Int?,
+        cycleCount: Int?,
+        tempVoltage: Pair<Double, Int>?,
+        status: String?
+    ): String {
+        val sb = StringBuilder()
+        battery?.let {
+            sb.appendLine(getString(R.string.battery_health_basic, it.level, it.charging, it.health))
+        }
+        capacity?.let { sb.appendLine(getString(R.string.battery_health_capacity, it)) }
+        cycleCount?.let { sb.appendLine(getString(R.string.battery_health_cycles, it)) }
+        tempVoltage?.let { (t, v) ->
+            sb.appendLine(getString(R.string.battery_health_temp, t))
+            sb.appendLine(getString(R.string.battery_health_voltage, v))
+        }
+        status?.let { sb.appendLine(getString(R.string.battery_health_status, it)) }
+        return if (sb.isNotEmpty()) sb.toString() else getString(R.string.battery_health_unavailable)
     }
 
     private fun readBatteryNoRoot(): BatteryInfo? {

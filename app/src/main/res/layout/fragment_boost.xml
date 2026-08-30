@@ -22,7 +22,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Memoria"
+                    android:text="@string/boost_memory_title"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                 <TextView
@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
-                    android:text="RAM: carregando..." />
+                    android:text="@string/boost_ram_loading" />
 
                 <Button
                     android:id="@+id/btn_game_mode"
@@ -91,8 +91,8 @@
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
+                        android:layout_marginStart="8dp"
                         android:text="@string/boost_anim_fast" />
 
                     <Button
@@ -100,8 +100,8 @@
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
+                        android:layout_marginStart="8dp"
                         android:text="@string/boost_anim_normal" />
                 </LinearLayout>
 
@@ -139,5 +139,153 @@
                     android:text="@string/boost_tip_body" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_title"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <Spinner
+                        android:id="@+id/profile_spinner"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:id="@+id/btn_profile_apply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/profile_apply"
+                        android:enabled="false"
+                        style="?attr/materialButtonStyle" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/profile_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/profile_name_hint"
+                    android:inputType="text" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_governor"
+                        android:layout_width="100dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <Spinner
+                        android:id="@+id/profile_gov_spinner"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_animations"
+                        android:layout_width="100dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <Spinner
+                        android:id="@+id/profile_anim_spinner"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <CheckBox
+                        android:id="@+id/profile_ram"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_ram_clean"
+                        android:checked="true" />
+
+                    <CheckBox
+                        android:id="@+id/profile_cache"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/profile_cache_clean"
+                        android:checked="true" />
+
+                    <CheckBox
+                        android:id="@+id/profile_fstrim"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/profile_fstrim" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="end">
+
+                    <Button
+                        android:id="@+id/btn_profile_save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_save"
+                        style="?attr/materialButtonStyle" />
+
+                    <Button
+                        android:id="@+id/btn_profile_delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/profile_delete"
+                        android:enabled="false"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:textColor="?attr/colorError" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 </ScrollView>

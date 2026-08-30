@@ -1,35 +1,46 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "technology.ezequieldevteam.ettoolbox"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "technology.ezequieldevteam.ettoolbox"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 6
         versionName = "0.4.2"
     }
 
     signingConfigs {
         create("ett") {
-            storeFile = rootProject.file("ci/signing/ettbox.jks")
-            storePassword = "ettbox2026"
-            keyAlias = "ettoolbox"
-            keyPassword = "ettbox2026"
+            val storeFile = System.getenv("SIGNING_STORE_FILE")?.let { rootProject.file(it) } ?: rootProject.file("ci/signing/ettbox.jks")
+            val storePassword = System.getenv("SIGNING_STORE_PASSWORD") ?: "ettbox2026"
+            val keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: "ettoolbox"
+            val keyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: "ettbox2026"
+
+            storeFile = storeFile
+            storePassword = storePassword
+            keyAlias = keyAlias
+            keyPassword = keyPassword
         }
     }
 
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("ett")
+            isMinifyEnabled = false
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("ett")
         }
     }
@@ -48,11 +59,11 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("com.github.topjohnwu.libsu:core:6.0.0")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.libsu)
 }

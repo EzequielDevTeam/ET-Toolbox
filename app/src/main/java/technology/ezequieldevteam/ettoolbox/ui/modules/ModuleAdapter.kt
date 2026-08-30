@@ -12,11 +12,21 @@ import technology.ezequieldevteam.ettoolbox.core.model.MagiskRow
 class ModuleAdapter(
     private var items: List<MagiskRow>,
     private val onToggle: (MagiskRow) -> Unit,
-    private val onRemove: (MagiskRow) -> Unit
+    private val onRemove: (MagiskRow) -> Unit,
+    private val onUpdate: (MagiskRow) -> Unit
 ) : RecyclerView.Adapter<ModuleAdapter.Holder>() {
 
-    fun replace(newItems: List<MagiskRow>) {
+    private var moduleUpdates: Map<String, ModuleUpdateInfo> = emptyMap()
+    private var showUpdates = false
+
+    fun replace(
+        newItems: List<MagiskRow>,
+        updates: Map<String, ModuleUpdateInfo> = emptyMap(),
+        showUpdates: Boolean = false
+    ) {
         items = newItems
+        moduleUpdates = updates
+        this.showUpdates = showUpdates
         notifyDataSetChanged()
     }
 
@@ -26,6 +36,8 @@ class ModuleAdapter(
         val state: TextView = view.findViewById(R.id.module_state)
         val btnToggle: Button = view.findViewById(R.id.module_toggle)
         val btnRemove: Button = view.findViewById(R.id.module_remove)
+        val btnUpdate: Button = view.findViewById(R.id.module_update)
+        val updateBadge: TextView = view.findViewById(R.id.module_update_badge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -45,7 +57,16 @@ class ModuleAdapter(
             else -> holder.itemView.context.getString(R.string.modules_state_off)
         }
 
+        val updateInfo = moduleUpdates[m.id]
+        val hasUpdate = showUpdates && updateInfo?.hasUpdate == true
+        holder.updateBadge.visibility = if (hasUpdate) View.VISIBLE else View.GONE
+        holder.btnUpdate.visibility = if (hasUpdate) View.VISIBLE else View.GONE
+        if (hasUpdate) {
+            holder.updateBadge.text = holder.itemView.context.getString(R.string.module_update_available, updateInfo!!.latestVersion)
+        }
+
         holder.btnToggle.setOnClickListener { onToggle(m) }
         holder.btnRemove.setOnClickListener { onRemove(m) }
+        holder.btnUpdate.setOnClickListener { onUpdate(m) }
     }
 }

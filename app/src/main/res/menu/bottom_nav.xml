@@ -5,4 +5,5 @@
     <item android:id="@+id/nav_clean" android:icon="@drawable/ic_trash" android:title="@string/tab_clean" />
     <item android:id="@+id/nav_modules" android:icon="@drawable/ic_extension" android:title="@string/tab_modules" />
     <item android:id="@+id/nav_device" android:icon="@drawable/ic_phone" android:title="@string/tab_device" />
+    <item android:id="@+id/nav_more" android:icon="@drawable/ic_more" android:title="@string/tab_more" />
 </menu>

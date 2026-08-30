@@ -81,6 +81,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp" />
+
+                <Button
+                    android:id="@+id/btn_battery_health_refresh"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/battery_health_refresh" />
+
+                <TextView
+                    android:id="@+id/battery_health"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="monospace"
+                    android:textSize="12sp"
+                    android:padding="8dp"
+                    android:background="?attr/colorSurfaceContainerHighest"
+                    android:text="@string/battery_health_loading" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

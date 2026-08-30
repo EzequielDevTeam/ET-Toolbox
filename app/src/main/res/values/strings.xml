@@ -6,6 +6,139 @@
     <string name="tab_clean">Limpeza</string>
     <string name="tab_modules">Módulos</string>
     <string name="tab_device">Aparelho</string>
+    <string name="tab_more">Mais</string>
+
+    <string name="nav_header_subtitle">Root toolbox para Android</string>
+    <string name="nav_scripts">Scripts</string>
+    <string name="nav_logs">Logs</string>
+    <string name="nav_benchmark">Benchmark</string>
+    <string name="nav_app_manager">Gerenciador Apps</string>
+    <string name="nav_network">Rede</string>
+    <string name="nav_settings_group">Configurações</string>
+    <string name="nav_settings">Configurações</string>
+    <string name="nav_about">Sobre</string>
+
+    <string name="scripts_title">Scripts Shell</string>
+    <string name="scripts_empty">Nenhum script salvo. Toque em \"Adicionar\" para criar.</string>
+    <string name="script_add">Adicionar</string>
+    <string name="script_add_title">Novo script</string>
+    <string name="script_edit_title">Editar script</string>
+    <string name="script_run">Executar</string>
+    <string name="script_run_all">Executar todos</string>
+    <string name="script_name_label">Nome do script</string>
+    <string name="script_name_hint">Ex: Limpar cache, Otimizar bateria</string>
+    <string name="script_content_label">Comandos (um por linha)</string>
+    <string name="script_content_hint">pm trim-caches 999999999999&#10;echo 3 > /proc/sys/vm/drop_caches&#10;fstrim -v /data</string>
+    <string name="script_empty_error">Nome e comandos são obrigatórios</string>
+    <string name="script_done">Script executado com sucesso</string>
+    <string name="script_failed">Falha: %1$s</string>
+    <string name="script_all_done">Concluídos: %1$d | Falharam: %2$d</string>
+    <string name="script_errors_title">Erros de execução</string>
+    <string name="script_delete_confirm">Excluir script?</string>
+    <string name="script_delete_body">O script \"%1$s\" será removido permanentemente.</string>
+    <string name="script_none">Nenhum script para executar</string>
+    <string name="save">Salvar</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Excluir</string>
+
+    <!-- Logs -->
+    <string name="logs_filter">Filtro</string>
+    <string name="refresh">Atualizar</string>
+    <string name="logs_clear">Limpar logcat</string>
+    <string name="logs_save">Salvar log</string>
+    <string name="logs_loading">Carregando logcat…</string>
+    <string name="logs_empty">Logcat vazio</string>
+    <string name="logs_cleared">Logcat limpo</string>
+    <string name="logs_clear_failed">Falha ao limpar (precisa root)</string>
+    <string name="logs_saved">Log salvo em: %1$s</string>
+    <string name="logs_nothing_to_save">Nada para salvar</string>
+    <string name="logs_save_failed">Falha ao salvar: %1$s</string>
+
+    <!-- Benchmark -->
+    <string name="bench_title">Benchmark</string>
+    <string name="bench_cpu">CPU</string>
+    <string name="bench_memory">Memória</string>
+    <string name="bench_storage">Armazenamento</string>
+    <string name="bench_full">Completo</string>
+    <string name="bench_ready">Selecione um teste acima</string>
+    <string name="bench_running">Executando…</string>
+    <string name="bench_cpu_result">CPU: %1$d ms (%2$s MOps/s)</string>
+    <string name="bench_mem_result">Memória: Write %1$s MB/s | Read %2$s MB/s</string>
+    <string name="bench_storage_result">Armazenamento: Write %1$s MB/s | Read %2$s MB/s</string>
+    <string name="bench_error">Erro: %1$s</string>
+    <string name="bench_full_started">Benchmark completo iniciado (CPU primeiro)</string>
+
+    <!-- App Manager -->
+    <string name="app_manager_title">Gerenciador de Apps</string>
+    <string name="app_search_hint">Buscar app…</string>
+    <string name="app_show_system">Mostrar apps do sistema</string>
+    <string name="app_enabled_only">Apenas habilitados</string>
+    <string name="app_batch_disable">Desativar selecionados</string>
+    <string name="app_batch_enable">Reativar selecionados</string>
+    <string name="app_enabled">Habilitado</string>
+    <string name="app_disabled">Desabilitado</string>
+    <string name="app_disabled_title">Desabilitado</string>
+    <string name="app_system_badge">Sistema</string>
+    <string name="app_info_body">Pacote: %1$s\nCaminho: %2$s\nSistema: %3$s\nStatus: %4$s</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="app_action_failed">Ação falhou (precisa root?)</string>
+    <string name="app_enabled">App %1$s habilitado</string>
+    <string name="app_disabled">App %1$s desativado</string>
+    <string name="app_none_selected">Nenhum app habilitado selecionado</string>
+    <string name="app_none_disabled">Nenhum app desativado selecionado</string>
+    <string name="app_batch_done">%1$d apps processados</string>
+
+    <!-- Network -->
+    <string name="network_title">Rede</string>
+    <string name="network_tools">Ferramentas de rede</string>
+    <string name="network_host_hint">Host/IP (ex: 8.8.8.8)</string>
+    <string name="network_ping">Ping</string>
+    <string name="network_traceroute">Traceroute</string>
+    <string name="network_dns_hint">Servidores DNS (ex: 1.1.1.1 8.8.8.8)</string>
+    <string name="network_dns_change">Aplicar DNS</string>
+    <string name="network_result_title">Resultado</string>
+    <string name="network_result_ready">Resultado aparecerá aqui</string>
+    <string name="network_loading">Carregando info de rede…</string>
+    <string name="network_active">Rede ativa: %1$s</string>
+    <string name="network_type">Tipo: %1$s</string>
+    <string name="network_interface">%1$s: %2$s</string>
+    <string name="network_dns">DNS: %1$s</string>
+    <string name="network_pinging">Ping para %1$s…</string>
+    <string name="network_ping_ok">Ping OK:\n%1$s</string>
+    <string name="network_ping_fail">Ping falhou:\n%1$s</string>
+    <string name="network_tracing">Traceroute para %1$s…</string>
+    <string name="network_trace_fail">Traceroute falhou ou não disponível</string>
+    <string name="network_dns_ok">DNS alterado (precisa reconectar)</string>
+    <string name="network_dns_fail">Falha ao alterar DNS: %1$s</string>
+    <string name="network_error">Erro: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_general">Geral</string>
+    <string name="settings_auto_update">Verificação automática de updates</string>
+    <string name="settings_auto_update_desc">Verificar updates em segundo plano (não implementado)</string>
+    <string name="settings_show_root_banner">Mostrar banner de root</string>
+    <string name="settings_show_root_banner_desc">Exibir aviso quando root não estiver disponível</string>
+    <string name="settings_vibrate">Vibrar em ações</string>
+    <string name="settings_vibrate_desc">Feedback tátil ao executar comandos</string>
+    <string name="settings_actions">Ações</string>
+    <string name="settings_check_update">Verificar atualizações agora</string>
+    <string name="settings_clear_cache">Limpar cache do app</string>
+    <string name="settings_export_scripts">Exportar scripts (JSON)</string>
+    <string name="settings_import_scripts">Importar scripts (JSON)</string>
+    <string name="settings_reset_all">Resetar todas configurações</string>
+    <string name="settings_version">Versão %1$s (build %2$d)</string>
+    <string name="settings_cache_cleared">Cache limpo</string>
+    <string name="settings_cache_fail">Falha: %1$s</string>
+    <string name="settings_no_scripts">Nenhum script para exportar</string>
+    <string name="settings_exported">Exportado para: %1$s</string>
+    <string name="settings_export_fail">Falha ao exportar: %1$s</string>
+    <string name="settings_import_todo">Importação em desenvolvimento</string>
+    <string name="settings_reset_title">Resetar configurações?</string>
+    <string name="settings_reset_body">Isso apagará todos os scripts salvos e preferências. Não pode ser desfeito.</string>
+    <string name="reset">Resetar</string>
+    <string name="settings_reset_done">Configurações resetadas. App será reiniciado.</string>
 
     <string name="boost_ram">RAM livre: %1$s de %2$s</string>
     <string name="boost_go">Modo Jogo</string>
@@ -13,6 +146,28 @@
     <string name="boost_no_root">Root não disponível. As funções avançadas exigem Magisk.</string>
     <string name="boost_tip_title">Antes da partida</string>
     <string name="boost_tip_body">Feche WhatsApp, Discord e Chrome. Cada aplicativo aberto consome RAM que o jogo poderia usar.</string>
+
+    <string name="boost_memory_title">Memória</string>
+    <string name="boost_ram_loading">RAM: carregando…</string>
+
+    <!-- Game Profiles -->
+    <string name="profile_title">Perfis de Jogo</string>
+    <string name="profile_new">Novo perfil</string>
+    <string name="profile_name_hint">Nome do perfil (ex: PUBG, COD, Genshin)</string>
+    <string name="profile_governor">Governador CPU</string>
+    <string name="profile_animations">Animações</string>
+    <string name="profile_ram_clean">Limpar RAM (kill-all + drop_caches)</string>
+    <string name="profile_cache_clean">Limpar cache (pm trim-caches)</string>
+    <string name="profile_fstrim">Executar fstrim</string>
+    <string name="profile_apply">Aplicar perfil</string>
+    <string name="profile_save">Salvar perfil</string>
+    <string name="profile_delete">Excluir perfil</string>
+    <string name="profile_applied">Perfil aplicado! %1$s MB livres</string>
+    <string name="profile_saved">Perfil salvo</string>
+    <string name="profile_name_empty">Digite um nome para o perfil</string>
+    <string name="profile_delete_confirm">Excluir perfil?</string>
+    <string name="profile_delete_body">O perfil \"%1$s\" será removido permanentemente.</string>
+    <string name="profile_deleted">Perfil excluído</string>
 
     <string name="troll_hint_title">Título da notificação</string>
     <string name="troll_hint_body">Texto da notificação</string>
@@ -43,6 +198,25 @@
     <string name="clean_enable">Reativar</string>
     <string name="clean_disabled">(desativado)</string>
 
+    <!-- Smart Scanner -->
+    <string name="clean_smart_scan">Escaneamento Inteligente</string>
+    <string name="clean_smart_show">Mostrar resultados do scan</string>
+    <string name="clean_smart_disable_all">Desativar selecionados</string>
+    <string name="clean_smart_scanning">Escaneando apps não usados…</string>
+    <string name="clean_smart_found">%1$d apps não usados encontrados</string>
+    <string name="clean_smart_unused">Não usado há %1$d dias</string>
+    <string name="clean_smart_never_used">Nunca usado</string>
+    <string name="clean_smart_last_used">Último uso: %1$s</string>
+    <string name="clean_smart_disable_title">Desativar apps?</string>
+    <string name="clean_smart_disable_body">%1$d apps serão desativados. Podem ser reativados depois.</string>
+    <string name="clean_smart_disabled">%1$d apps desativados</string>
+    <string name="clean_smart_none_selected">Nenhum app selecionado</string>
+    <string name="clean_bloat_catalog">Catálogo conhecido</string>
+    <string name="clean_smart_results">Resultados do escaneamento inteligente</string>
+    <string name="clean_installed">Instalado</string>
+    <string name="clean_not_installed">Não instalado</string>
+    <string name="clean_safe_badge">Seguro</string>
+
     <string name="modules_none">Nenhum módulo instalado ou sem acesso root.</string>
     <string name="modules_loading">Carregando módulos…</string>
     <string name="modules_state_on">Ativo</string>
@@ -51,6 +225,25 @@
     <string name="modules_remove">Remover</string>
     <string name="modules_removed">Marcado para remoção no próximo reboot</string>
     <string name="modules_toggled">Estado alterado. Reinicie para aplicar.</string>
+
+    <!-- Module Updater -->
+    <string name="modules_check_updates">Verificar atualizações</string>
+    <string name="modules_update_all">Atualizar todos</string>
+    <string name="modules_show_updates">Mostrar apenas com update</string>
+    <string name="modules_checking_updates">Verificando atualizações…</string>
+    <string name="modules_updates_found">%1$d módulos com atualização disponível</string>
+    <string name="modules_no_updates">Nenhuma atualização encontrada</string>
+    <string name="modules_update_title">Atualizar módulo?</string>
+    <string name="modules_update_body">Nova versão %2$s disponível para %1$s. Abrir página de download?</string>
+    <string name="modules_update">Atualizar</string>
+    <string name="modules_no_update_available">Nenhuma atualização disponível para este módulo</string>
+    <string name="modules_downloading">Baixando %1$s…</string>
+    <string name="modules_open_download">Abrindo página de download no navegador</string>
+    <string name="modules_download_failed">Falha ao abrir download: %1$s</string>
+    <string name="modules_no_updates_to_install">Nenhum módulo para atualizar</string>
+    <string name="modules_opened_downloads">Abertos %1$d links de download</string>
+    <string name="module_update">Atualizar</string>
+    <string name="module_update_available">Update: %1$s</string>
 
     <string name="device_spoof_title">Spoof de identidade</string>
     <string name="device_spoof_model">Modelo</string>
@@ -107,6 +300,17 @@
     <string name="device_battery_loading">Lendo bateria…</string>
     <string name="device_battery_unavailable">Não foi possível ler a bateria.</string>
     <string name="device_battery_line">Nível: %1$d%% (%2$s)\nSaúde: %3$s | Temperatura: %4$.1f °C | Tensão: %5$d mV</string>
+
+    <!-- Battery Health -->
+    <string name="battery_health_refresh">Verificar saúde da bateria</string>
+    <string name="battery_health_loading">Lendo saúde da bateria…</string>
+    <string name="battery_health_unavailable">Info detalhada indisponível (precisa root)</string>
+    <string name="battery_health_basic">Nível: %1$d%% (%2$s)\nSaúde: %3$s</string>
+    <string name="battery_health_capacity">Capacidade: %1$d%%</string>
+    <string name="battery_health_cycles">Ciclos de carga: %1$d</string>
+    <string name="battery_health_temp">Temperatura: %.1f °C</string>
+    <string name="battery_health_voltage">Tensão: %1$d mV</string>
+    <string name="battery_health_status">Status: %1$s</string>
 
     <string name="device_density_title">Densidade da tela</string>
     <string name="device_density_loading">Lendo densidade…</string>

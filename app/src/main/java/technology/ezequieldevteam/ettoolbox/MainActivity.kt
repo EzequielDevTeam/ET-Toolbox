@@ -1,18 +1,28 @@
 package technology.ezequieldevteam.ettoolbox
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationView
 import technology.ezequieldevteam.ettoolbox.databinding.ActivityMainBinding
 import technology.ezequieldevteam.ettoolbox.ui.boost.BoostFragment
 import technology.ezequieldevteam.ettoolbox.ui.clean.CleanFragment
 import technology.ezequieldevteam.ettoolbox.ui.device.DeviceFragment
 import technology.ezequieldevteam.ettoolbox.ui.modules.ModulesFragment
 import technology.ezequieldevteam.ettoolbox.ui.troll.TrollFragment
+import technology.ezequieldevteam.ettoolbox.ui.scripts.ScriptsFragment
+import technology.ezequieldevteam.ettoolbox.ui.logs.LogsFragment
+import technology.ezequieldevteam.ettoolbox.ui.benchmark.BenchmarkFragment
+import technology.ezequieldevteam.ettoolbox.ui.appmanager.AppManagerFragment
+import technology.ezequieldevteam.ettoolbox.ui.network.NetworkFragment
+import technology.ezequieldevteam.ettoolbox.ui.settings.SettingsFragment
 import technology.ezequieldevteam.ettoolbox.update.ApkInstaller
 import technology.ezequieldevteam.ettoolbox.update.UpdateChecker
 
@@ -20,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var wasRooted = false
+    private var currentNavItemId = R.id.nav_boost
 
     private val rootListener: (Boolean) -> Unit = { granted ->
         binding.rootBanner.visibility = if (granted) View.GONE else View.VISIBLE
@@ -40,20 +51,39 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        if (savedInstanceState == null) show(BoostFragment())
+        setupDrawer()
+        setupBottomNav()
+        setupToolbar()
 
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            val fragment: Fragment = when (item.itemId) {
-                R.id.nav_boost -> BoostFragment()
-                R.id.nav_troll -> TrollFragment()
-                R.id.nav_clean -> CleanFragment()
-                R.id.nav_modules -> ModulesFragment()
-                else -> DeviceFragment()
-            }
-            show(fragment)
-            true
+        binding.btnGrantRoot.setOnClickListener {
+            EtApp.requestRoot()
         }
 
+        if (savedInstanceState == null) {
+            show(BoostFragment())
+            checkUpdate(manual = false)
+        }
+    }
+
+    private fun setupDrawer() {
+        binding.navView.setNavigationItemSelectedListener { item ->
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            onNavItemSelected(item.itemId)
+            true
+        }
+        binding.topToolbar.setNavigationOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+    }
+
+    private fun setupBottomNav() {
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            onNavItemSelected(item.itemId)
+            true
+        }
+    }
+
+    private fun setupToolbar() {
         binding.topToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_credits -> {
@@ -67,14 +97,35 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
 
-        binding.btnGrantRoot.setOnClickListener {
-            EtApp.requestRoot()
+    private fun onNavItemSelected(itemId: Int) {
+        val fragment: Fragment = when (itemId) {
+            R.id.nav_boost -> BoostFragment()
+            R.id.nav_troll -> TrollFragment()
+            R.id.nav_clean -> CleanFragment()
+            R.id.nav_modules -> ModulesFragment()
+            R.id.nav_device -> DeviceFragment()
+            R.id.nav_more -> binding.drawerLayout.openDrawer(GravityCompat.START).also { return@when }
+            R.id.nav_scripts -> ScriptsFragment()
+            R.id.nav_logs -> LogsFragment()
+            R.id.nav_benchmark -> BenchmarkFragment()
+            R.id.nav_app_manager -> AppManagerFragment()
+            R.id.nav_network -> NetworkFragment()
+            R.id.nav_settings -> SettingsFragment()
+            R.id.nav_about -> {
+                CreditsDialog.show(this)
+                return@when
+            }
+            else -> BoostFragment()
         }
+        currentNavItemId = itemId
+        updateBottomNavSelection(itemId)
+        show(fragment)
+    }
 
-        if (savedInstanceState == null) {
-            checkUpdate(manual = false)
-        }
+    private fun updateBottomNavSelection(itemId: Int) {
+        binding.bottomNav.menu.findItem(itemId)?.isChecked = true
     }
 
     override fun onStart() {
@@ -86,6 +137,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         EtApp.removeRootListener(rootListener)
+    }
+
+    override fun onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     fun checkUpdate(manual: Boolean) {

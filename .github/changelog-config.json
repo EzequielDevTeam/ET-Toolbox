@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "title": "### ✨ Novas Funcionalidades",
+      "labels": ["feature", "enhancement"]
+    },
+    {
+      "title": "### 🐛 Correções de Bugs",
+      "labels": ["bug", "fix"]
+    },
+    {
+      "title": "### 🔧 Melhorias",
+      "labels": ["improvement", "refactor"]
+    },
+    {
+      "title": "### 📦 Dependências",
+      "labels": ["dependencies"]
+    },
+    {
+      "title": "### 🔐 Segurança",
+      "labels": ["security"]
+    }
+  ],
+  "template": "# {{title}}\n\n{{#each commits}}\n- {{message}} ([#{{id}}]({{url}}))\n{{/each}}\n\n---\n*Changelog gerado automaticamente via GitHub Actions*"
+}
