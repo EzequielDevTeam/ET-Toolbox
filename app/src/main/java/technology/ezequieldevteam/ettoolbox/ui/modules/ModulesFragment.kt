@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.textfield.TextInputEditText
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
@@ -61,6 +62,9 @@ class ModulesFragment : Fragment() {
             }
         )
 
+        val swipeRefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        swipeRefresh.setOnRefreshListener { refreshModules() }
+
         view.findViewById<Button>(R.id.btn_check_updates).setOnClickListener { checkUpdates() }
         view.findViewById<Button>(R.id.btn_update_all).setOnClickListener { updateAll() }
         view.findViewById<CheckBox>(R.id.cb_show_updates).setOnCheckedChangeListener { _, checked ->
@@ -90,7 +94,9 @@ class ModulesFragment : Fragment() {
             return
         }
 
+        val swipeRefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         MagiskRepo.list { rows, error ->
+            swipeRefresh?.isRefreshing = false
             ui {
                 val v = _root ?: return@ui
                 if (error != null) {
@@ -147,10 +153,13 @@ class ModulesFragment : Fragment() {
         }
     }
 
+    private fun refreshModules() {
+        val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        load()
+        swipeRefresh?.isRefreshing = false
+    }
+
     private fun fetchModuleUpdate(moduleId: String, currentVersion: String): ModuleUpdateInfo? {
-        // Try to fetch from GitHub releases of known module repos
-        // This is a simplified version - in reality you'd need a module index
-        return try {
             // For now, just return null - this would need a proper module repository index
             null
         } catch (e: Exception) {

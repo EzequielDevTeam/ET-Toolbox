@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.core.rootcmd.Root
@@ -47,6 +48,9 @@ class AppManagerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val swipeRefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        swipeRefresh.setOnRefreshListener { refreshApps() }
+
         val recycler = view.findViewById<RecyclerView>(R.id.apps_list)
         recycler.layoutManager = LinearLayoutManager(requireContext())
         adapter = AppAdapter(filteredApps, onClick = { toggleApp(it) }, onLongClick = { showAppInfo(it) })
@@ -75,6 +79,12 @@ class AppManagerFragment : Fragment() {
         view.findViewById<Button>(R.id.btn_batch_enable).setOnClickListener { batchEnable() }
 
         loadApps()
+    }
+
+    private fun refreshApps() {
+        val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        loadApps()
+        swipeRefresh?.isRefreshing = false
     }
 
     private fun loadApps() {

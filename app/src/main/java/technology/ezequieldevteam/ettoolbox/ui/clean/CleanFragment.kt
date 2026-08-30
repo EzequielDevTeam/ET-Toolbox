@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import technology.ezequieldevteam.ettoolbox.EtApp
 import technology.ezequieldevteam.ettoolbox.R
 import technology.ezequieldevteam.ettoolbox.core.data.BloatCatalog
@@ -45,6 +46,9 @@ class CleanFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val swipeRefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        swipeRefresh.setOnRefreshListener { refreshData() }
+        
         view.findViewById<Button>(R.id.btn_clean_cache).setOnClickListener { cleanCache() }
         view.findViewById<Button>(R.id.btn_smart_scan).setOnClickListener { runSmartScan() }
         view.findViewById<Button>(R.id.btn_disable_all_smart).setOnClickListener { disableAllSmart() }
@@ -54,6 +58,13 @@ class CleanFragment : Fragment() {
         }
         setupBloatList(view)
         loadStorage(view)
+    }
+
+    private fun refreshData() {
+        val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+        setupBloatList(_root!!)
+        loadStorage(_root!!)
+        swipeRefresh?.isRefreshing = false
     }
 
     private fun loadStorage(view: View) {
