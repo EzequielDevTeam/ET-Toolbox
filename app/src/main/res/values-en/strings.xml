@@ -208,8 +208,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="app_action_failed">Action failed (needs root?)</string>
-    <string name="app_enabled">App %1$s enabled</string>
-    <string name="app_disabled">App %1$s disabled</string>
+    <string name="app_enabled_toast">App %1$s enabled</string>
+    <string name="app_disabled_toast">App %1$s disabled</string>
     <string name="app_none_selected">No enabled app selected</string>
     <string name="app_none_disabled">No disabled app selected</string>
     <string name="app_batch_done">%1$d apps processed</string>
