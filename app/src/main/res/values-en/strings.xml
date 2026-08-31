@@ -314,7 +314,6 @@
     <string name="clean_bloat_catalog">Known catalog</string>
     <string name="clean_smart_results">Smart scan results</string>
     <string name="clean_installed">Installed</string>
-    <string name="clean_not_installed">Not installed</string>
     <string name="clean_safe_badge">Safe</string>
 
     <!-- Module Updater -->
