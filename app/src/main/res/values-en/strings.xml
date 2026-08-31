@@ -1,0 +1,338 @@
+<resources>
+    <string name="app_name">ET Toolbox</string>
+
+    <string name="tab_boost">Boost</string>
+    <string name="tab_troll">Troll</string>
+    <string name="tab_clean">Cleaner</string>
+    <string name="tab_modules">Modules</string>
+    <string name="tab_device">Device</string>
+    <string name="tab_more">More</string>
+
+    <string name="boost_ram">Free RAM: %1$s of %2$s</string>
+    <string name="boost_go">Game Mode</string>
+    <string name="boost_done">Background killed, caches cleared. %1$s MB free.</string>
+    <string name="boost_no_root">Root not available. Advanced functions require Magisk.</string>
+    <string name="boost_tip_title">Before the match</string>
+    <string name="boost_tip_body">Close WhatsApp, Discord and Chrome. Every open app consumes RAM the game could use.</string>
+
+    <string name="troll_hint_title">Notification title</string>
+    <string name="troll_hint_body">Notification text</string>
+    <string name="troll_delay">Delay (0 = immediate)</string>
+    <string name="troll_send">Send</string>
+    <string name="troll_cancel">Cancel</string>
+    <string name="troll_vibrate">Vibrate too</string>
+    <string name="troll_scheduled">Scheduled: fires in %1$s %2$s</string>
+    <string name="troll_cancelled">Scheduled notifications cancelled.</string>
+    <string name="troll_nothing_pending">Nothing scheduled to cancel.</string>
+    <string name="troll_sent">Notification sent</string>
+    <string name="troll_presets">Ready presets</string>
+
+    <string-array name="troll_units">
+        <item>Seconds</item>
+        <item>Minutes</item>
+        <item>Hours</item>
+    </string-array>
+
+    <string name="banner_root_needed">Root access required for system functions.</string>
+    <string name="banner_grant">Grant root</string>
+    <string name="root_granted">Root granted!</string>
+
+    <string name="clean_cache_btn">Clear cache of all apps</string>
+    <string name="clean_cache_done">Cache cleared: %1$s freed</string>
+    <string name="clean_bloat_title">Bloatware detected</string>
+    <string name="clean_disable">Disable</string>
+    <string name="clean_enable">Re-enable</string>
+    <string name="clean_disabled">(disabled)</string>
+
+    <string name="modules_none">No modules installed or no root access.</string>
+    <string name="modules_loading">Loading modules…</string>
+    <string name="modules_state_on">Enabled</string>
+    <string name="modules_state_off">Disabled</string>
+    <string name="modules_toggle">Toggle</string>
+    <string name="modules_remove">Remove</string>
+    <string name="modules_removed">Marked for removal on next reboot</string>
+    <string name="modules_toggled">State changed. Reboot to apply.</string>
+
+    <string name="device_spoof_title">Identity spoof</string>
+    <string name="device_spoof_model">Model</string>
+    <string name="device_spoof_brand">Brand</string>
+    <string name="device_spoof_apply">Apply spoof</string>
+    <string name="device_spoof_restore">Restore original</string>
+    <string name="device_spoof_applied">Properties changed. Reboot for full effect.</string>
+    <string name="device_spoof_restored">Original values restored.</string>
+    <string name="device_cpu_governor">CPU Governor</string>
+    <string name="device_cpu_apply">Apply governor</string>
+    <string name="device_cpu_applied">Governor applied to all cores.</string>
+    <string name="device_cpu_loading">Loading CPU info…</string>
+    <string name="device_cpu_no_root">No root access to CPU.</string>
+    <string name="device_cpu_current">Current governor: %1$s</string>
+    <string name="device_cpu_freqs">Frequencies: %1$s</string>
+
+    <string name="device_line_name">Device: %1$s</string>
+    <string name="device_line_android">Android: %1$s (API %2$s)</string>
+    <string name="device_line_patch">Security patch: %1$s</string>
+    <string name="device_line_soc">SoC: %1$s</string>
+    <string name="device_line_cores">CPU cores: %1$d</string>
+    <string name="device_line_ram">Total RAM: %1$d MB</string>
+    <string name="device_line_kernel">Kernel: %1$s</string>
+    <string name="device_line_root">Root: %1$s</string>
+
+    <string name="soon">Under construction</string>
+
+    <string name="menu_credits">Credits</string>
+    <string name="menu_check_update">Check for updates</string>
+    <string name="credits_title">ET Toolbox Credits</string>
+    <string name="credits_body">Developed by EzequielDevTeam.\n\nSpecial thanks:\n• topjohnwu — Magisk and libsu\n• Material Design team — visual components\n• Open source communities (LSPosed, KernelSU, MRepo) — technical references\n\nMade with care for the Brazilian Android community.</string>
+
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_up_to_date">You are already on the latest version.</string>
+    <string name="update_found_title">New version: %1$s</string>
+    <string name="update_found_body">A new version is available. Download and install now?</string>
+    <string name="update_download">Download and install</string>
+    <string name="update_download_failed">Download failed. Try again or download directly from GitHub.</string>
+    <string name="update_install_failed">Could not open installer. Check install apps permission.</string>
+
+    <string name="modules_search_hint">Search module…</string>
+    <string name="modules_need_root">Grant root to list modules.</string>
+    <string name="modules_count">%1$d modules found</string>
+    <string name="modules_state_del">Pending removal</string>
+    <string name="modules_error_prefix">Error listing modules: %1$s</string>
+    <string name="modules_action_failed">Root operation failed.</string>
+    <string name="modules_remove_confirm_title">Remove module?</string>
+    <string name="modules_remove_confirm_body">%1$s will be uninstalled on next reboot.</string>
+
+    <string name="device_cpu_error">CPU unavailable: %1$s</string>
+    <string name="device_cpu_minmax">Limits: %1$d – %2$d MHz</string>
+
+    <string name="device_battery_title">Battery</string>
+    <string name="device_battery_loading">Reading battery…</string>
+    <string name="device_battery_unavailable">Could not read battery.</string>
+    <string name="device_battery_line">Level: %1$d%% (%2$s)\nHealth: %3$s | Temp: %4$.1f °C | Voltage: %5$d mV</string>
+
+    <string name="device_density_title">Screen density</string>
+    <string name="device_density_loading">Reading density…</string>
+    <string name="device_density_current">Current density: %1$d dpi</string>
+    <string name="device_density_hint">New density (e.g.: 440)</string>
+    <string name="device_density_apply">Apply</string>
+    <string name="device_density_reset">Reset to default</string>
+    <string name="device_density_invalid">Enter a value between 200 and 1000.</string>
+    <string name="device_density_done">Density applied!</string>
+    <string name="device_density_reset_done">Density restored to default.</string>
+
+    <string name="device_reboot_title">Reboot device</string>
+    <string name="device_reboot_warning">Confirm: device reboots immediately.</string>
+    <string name="device_reboot_normal">Normal</string>
+    <string name="device_reboot_recovery">Recovery</string>
+    <string name="device_reboot_bootloader">Bootloader</string>
+    <string name="device_reboot_normal_title">Reboot now?</string>
+    <string name="device_reboot_recovery_title">Reboot to recovery?</string>
+    <string name="device_reboot_bootloader_title">Reboot to bootloader?</string>
+    <string name="device_reboot_confirm_body">Device will reboot immediately. Continue?</string>
+
+    <string name="boost_anim_title">System animations</string>
+    <string name="boost_anim_loading">Loading animations…</string>
+    <string name="boost_anim_current">Current speed: %1$s</string>
+    <string name="boost_anim_off">Off</string>
+    <string name="boost_anim_fast">0.5x</string>
+    <string name="boost_anim_normal">1x</string>
+    <string name="boost_anim_done">Animations changed!</string>
+    <string name="boost_fstrim">Run FSTRIM now</string>
+    <string name="boost_fstrim_done">FSTRIM: %1$s</string>
+
+    <string name="clean_working">Cleaning…</string>
+    <string name="clean_not_installed">not installed</string>
+
+    <!-- Scripts -->
+    <string name="scripts_title">Shell Scripts</string>
+    <string name="scripts_empty">No saved scripts. Tap "Add" to create.</string>
+    <string name="script_add">Add</string>
+    <string name="script_add_title">New script</string>
+    <string name="script_edit_title">Edit script</string>
+    <string name="script_run">Run</string>
+    <string name="script_run_all">Run all</string>
+    <string name="script_name_label">Script name</string>
+    <string name="script_name_hint">Ex: Clear cache, Optimize battery</string>
+    <string name="script_content_label">Commands (one per line)</string>
+    <string name="script_content_hint">pm trim-caches 999999999999&#10;echo 3 > /proc/sys/vm/drop_caches&#10;fstrim -v /data</string>
+    <string name="script_empty_error">Name and commands are required</string>
+    <string name="script_done">Script executed successfully</string>
+    <string name="script_failed">Failed: %1$s</string>
+    <string name="script_all_done">Completed: %1$d | Failed: %2$d</string>
+    <string name="script_errors_title">Execution errors</string>
+    <string name="script_delete_confirm">Delete script?</string>
+    <string name="script_delete_body">Script \"%1$s\" will be permanently removed.</string>
+    <string name="script_none">No scripts to run</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
+    <!-- Logs -->
+    <string name="logs_filter">Filter</string>
+    <string name="refresh">Refresh</string>
+    <string name="logs_clear">Clear logcat</string>
+    <string name="logs_save">Save log</string>
+    <string name="logs_loading">Loading logcat…</string>
+    <string name="logs_empty">Logcat empty</string>
+    <string name="logs_cleared">Logcat cleared</string>
+    <string name="logs_clear_failed">Failed to clear (needs root)</string>
+    <string name="logs_saved">Log saved at: %1$s</string>
+    <string name="logs_nothing_to_save">Nothing to save</string>
+    <string name="logs_save_failed">Failed to save: %1$s</string>
+
+    <!-- Benchmark -->
+    <string name="bench_title">Benchmark</string>
+    <string name="bench_cpu">CPU</string>
+    <string name="bench_memory">Memory</string>
+    <string name="bench_storage">Storage</string>
+    <string name="bench_full">Full</string>
+    <string name="bench_ready">Select a test above</string>
+    <string name="bench_running">Running…</string>
+    <string name="bench_cpu_result">CPU: %1$d ms (%2$s MOps/s)</string>
+    <string name="bench_mem_result">Memory: Write %1$s MB/s | Read %2$s MB/s</string>
+    <string name="bench_storage_result">Storage: Write %1$s MB/s | Read %2$s MB/s</string>
+    <string name="bench_error">Error: %1$s</string>
+    <string name="bench_full_started">Full benchmark started (CPU first)</string>
+
+    <!-- App Manager -->
+    <string name="app_manager_title">App Manager</string>
+    <string name="app_search_hint">Search app…</string>
+    <string name="app_show_system">Show system apps</string>
+    <string name="app_enabled_only">Enabled only</string>
+    <string name="app_batch_disable">Disable selected</string>
+    <string name="app_batch_enable">Re-enable selected</string>
+    <string name="app_enabled">Enabled</string>
+    <string name="app_disabled">Disabled</string>
+    <string name="app_disabled_title">Disabled</string>
+    <string name="app_system_badge">System</string>
+    <string name="app_info_body">Package: %1$s\nPath: %2$s\nSystem: %3$s\nStatus: %4$s</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="app_action_failed">Action failed (needs root?)</string>
+    <string name="app_enabled">App %1$s enabled</string>
+    <string name="app_disabled">App %1$s disabled</string>
+    <string name="app_none_selected">No enabled app selected</string>
+    <string name="app_none_disabled">No disabled app selected</string>
+    <string name="app_batch_done">%1$d apps processed</string>
+
+    <!-- Network -->
+    <string name="network_title">Network</string>
+    <string name="network_tools">Network tools</string>
+    <string name="network_host_hint">Host/IP (e.g.: 8.8.8.8)</string>
+    <string name="network_ping">Ping</string>
+    <string name="network_traceroute">Traceroute</string>
+    <string name="network_dns_hint">DNS servers (e.g.: 1.1.1.1 8.8.8.8)</string>
+    <string name="network_dns_change">Apply DNS</string>
+    <string name="network_result_title">Result</string>
+    <string name="network_result_ready">Result will appear here</string>
+    <string name="network_loading">Loading network info…</string>
+    <string name="network_active">Active network: %1$s</string>
+    <string name="network_type">Type: %1$s</string>
+    <string name="network_interface">%1$s: %2$s</string>
+    <string name="network_dns">DNS: %1$s</string>
+    <string name="network_pinging">Pinging %1$s…</string>
+    <string name="network_ping_ok">Ping OK:\n%1$s</string>
+    <string name="network_ping_fail">Ping failed:\n%1$s</string>
+    <string name="network_tracing">Traceroute to %1$s…</string>
+    <string name="network_trace_fail">Traceroute failed or unavailable</string>
+    <string name="network_dns_ok">DNS changed (reconnect needed)</string>
+    <string name="network_dns_fail">Failed to change DNS: %1$s</string>
+    <string name="network_error">Error: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_general">General</string>
+    <string name="settings_auto_update">Auto update check</string>
+    <string name="settings_auto_update_desc">Check updates in background (not implemented)</string>
+    <string name="settings_show_root_banner">Show root banner</string>
+    <string name="settings_show_root_banner_desc">Show warning when root not available</string>
+    <string name="settings_vibrate">Vibrate on actions</string>
+    <string name="settings_vibrate_desc">Haptic feedback when executing commands</string>
+    <string name="settings_actions">Actions</string>
+    <string name="settings_check_update">Check for updates now</string>
+    <string name="settings_clear_cache">Clear app cache</string>
+    <string name="settings_export_scripts">Export scripts (JSON)</string>
+    <string name="settings_import_scripts">Import scripts (JSON)</string>
+    <string name="settings_reset_all">Reset all settings</string>
+    <string name="settings_version">Version %1$s (build %2$d)</string>
+    <string name="settings_cache_cleared">Cache cleared</string>
+    <string name="settings_cache_fail">Failed: %1$s</string>
+    <string name="settings_no_scripts">No scripts to export</string>
+    <string name="settings_exported">Exported to: %1$s</string>
+    <string name="settings_export_fail">Failed to export: %1$s</string>
+    <string name="settings_import_todo">Import in development</string>
+    <string name="settings_reset_title">Reset settings?</string>
+    <string name="settings_reset_body">This will delete all saved scripts and preferences. Cannot be undone.</string>
+    <string name="reset">Reset</string>
+    <string name="settings_reset_done">Settings reset. App will restart.</string>
+
+    <!-- Battery Health -->
+    <string name="battery_health_refresh">Check battery health</string>
+    <string name="battery_health_loading">Reading battery health…</string>
+    <string name="battery_health_unavailable">Detailed info unavailable (needs root)</string>
+    <string name="battery_health_basic">Level: %1$d%% (%2$s)\nHealth: %3$s</string>
+    <string name="battery_health_capacity">Capacity: %1$d%%</string>
+    <string name="battery_health_cycles">Charge cycles: %1$d</string>
+    <string name="battery_health_temp">Temperature: %.1f °C</string>
+    <string name="battery_health_voltage">Voltage: %1$d mV</string>
+    <string name="battery_health_status">Status: %1$s</string>
+
+    <!-- Game Profiles -->
+    <string name="boost_memory_title">Memory</string>
+    <string name="boost_ram_loading">RAM: loading…</string>
+
+    <string name="profile_title">Game Profiles</string>
+    <string name="profile_new">New profile</string>
+    <string name="profile_name_hint">Profile name (e.g.: PUBG, COD, Genshin)</string>
+    <string name="profile_governor">CPU Governor</string>
+    <string name="profile_animations">Animations</string>
+    <string name="profile_ram_clean">Clean RAM (kill-all + drop_caches)</string>
+    <string name="profile_cache_clean">Clean cache (pm trim-caches)</string>
+    <string name="profile_fstrim">Run fstrim</string>
+    <string name="profile_apply">Apply profile</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_delete">Delete profile</string>
+    <string name="profile_applied">Profile applied! %1$s MB free</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="profile_name_empty">Enter a profile name</string>
+    <string name="profile_delete_confirm">Delete profile?</string>
+    <string name="profile_delete_body">Profile \"%1$s\" will be permanently removed.</string>
+    <string name="profile_deleted">Profile deleted</string>
+
+    <!-- Smart Scanner -->
+    <string name="clean_smart_scan">Smart Scan</string>
+    <string name="clean_smart_show">Show scan results</string>
+    <string name="clean_smart_disable_all">Disable selected</string>
+    <string name="clean_smart_scanning">Scanning unused apps…</string>
+    <string name="clean_smart_found">%1$d unused apps found</string>
+    <string name="clean_smart_unused">Unused for %1$d days</string>
+    <string name="clean_smart_never_used">Never used</string>
+    <string name="clean_smart_last_used">Last used: %1$s</string>
+    <string name="clean_smart_disable_title">Disable apps?</string>
+    <string name="clean_smart_disable_body">%1$d apps will be disabled. Can be re-enabled later.</string>
+    <string name="clean_smart_disabled">%1$d apps disabled</string>
+    <string name="clean_smart_none_selected">No app selected</string>
+    <string name="clean_bloat_catalog">Known catalog</string>
+    <string name="clean_smart_results">Smart scan results</string>
+    <string name="clean_installed">Installed</string>
+    <string name="clean_not_installed">Not installed</string>
+    <string name="clean_safe_badge">Safe</string>
+
+    <!-- Module Updater -->
+    <string name="modules_check_updates">Check updates</string>
+    <string name="modules_update_all">Update all</string>
+    <string name="modules_show_updates">Show only with update</string>
+    <string name="modules_checking_updates">Checking updates…</string>
+    <string name="modules_updates_found">%1$d modules with available update</string>
+    <string name="modules_no_updates">No updates found</string>
+    <string name="modules_update_title">Update module?</string>
+    <string name="modules_update_body">New version %2$s available for %1$s. Open download page?</string>
+    <string name="modules_update">Update</string>
+    <string name="modules_no_update_available">No update available for this module</string>
+    <string name="modules_downloading">Downloading %1$s…</string>
+    <string name="modules_open_download">Opening download page in browser</string>
+    <string name="modules_download_failed">Failed to open download: %1$s</string>
+    <string name="modules_no_updates_to_install">No modules to update</string>
+    <string name="modules_opened_downloads">Opened %1$d download links</string>
+    <string name="module_update">Update</string>
+    <string name="module_update_available">Update: %1$s</string>
+</resources>
