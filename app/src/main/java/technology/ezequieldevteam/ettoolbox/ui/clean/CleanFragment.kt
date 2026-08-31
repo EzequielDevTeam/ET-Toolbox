@@ -64,7 +64,8 @@ class CleanFragment : Fragment() {
         val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         setupBloatList(_root!!)
         loadStorage(_root!!)
-        swipeRefresh?.isRefreshing = false
+        // Wait a bit for async operations to complete, then stop refresh
+        swipeRefresh?.postDelayed({ swipeRefresh?.isRefreshing = false }, 1500)
     }
 
     private fun loadStorage(view: View) {

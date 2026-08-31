@@ -84,7 +84,7 @@ class AppManagerFragment : Fragment() {
     private fun refreshApps() {
         val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         loadApps()
-        swipeRefresh?.isRefreshing = false
+        swipeRefresh?.postDelayed({ swipeRefresh?.isRefreshing = false }, 1500)
     }
 
     private fun loadApps() {

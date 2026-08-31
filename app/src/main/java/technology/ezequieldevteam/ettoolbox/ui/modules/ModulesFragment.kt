@@ -156,7 +156,7 @@ class ModulesFragment : Fragment() {
     private fun refreshModules() {
         val swipeRefresh = _root?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         load()
-        swipeRefresh?.isRefreshing = false
+        swipeRefresh?.postDelayed({ swipeRefresh?.isRefreshing = false }, 1500)
     }
 
     private fun fetchModuleUpdate(moduleId: String, currentVersion: String): ModuleUpdateInfo? {
